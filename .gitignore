@@ -1,0 +1,20 @@
+# Anchor / Solana
+.anchor/
+test-ledger/
+target/
+
+# Rust
+**/*.rs.bk
+
+# Node
+node_modules/
+dist/
+.yarn/
+
+# Secrets
+.env
+keys/
+
+# OS
+.DS_Store
+Thumbs.db
