@@ -1,0 +1,143 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+env:
+  SOLANA_VERSION: "1.18.9"
+  ANCHOR_VERSION: "0.30.1"
+  NODE_VERSION: "20"
+  RUST_TOOLCHAIN: "1.78.0"
+
+jobs:
+  lint-and-format:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+          components: clippy, rustfmt
+
+      - name: Check Rust formatting
+        run: cargo fmt --all -- --check
+
+      - name: Run Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
+
+      - name: Install JS deps
+        run: yarn install --frozen-lockfile
+
+      - name: TypeScript type check
+        run: yarn tsc --noEmit
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+
+      - name: Run audit
+        run: cargo audit
+
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+
+      - name: Cache Rust artifacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install Solana CLI
+        run: |
+          sh -c "$(curl -sSfL https://release.solana.com/v${{ env.SOLANA_VERSION }}/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+
+      - name: Install Anchor CLI
+        run: |
+          cargo install --git https://github.com/coral-xyz/anchor \
+            anchor-cli --tag v${{ env.ANCHOR_VERSION }} --locked
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
+
+      - name: Install JS deps
+        run: yarn install --frozen-lockfile
+
+      - name: Generate localnet keypair
+        run: solana-keygen new --no-bip39-passphrase --silent
+
+      - name: Build program
+        run: anchor build
+
+      - name: Run tests
+        run: anchor test 2>&1 | tee test-output.txt
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-output
+          path: test-output.txt
+
+      - name: Upload IDL artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: idl
+          path: target/idl/data_market.json
+
+  size-report:
+    name: Program Size Report
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+      - uses: Swatinem/rust-cache@v2
+      - name: Install toolchain
+        run: |
+          sh -c "$(curl -sSfL https://release.solana.com/v${{ env.SOLANA_VERSION }}/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+          cargo install --git https://github.com/coral-xyz/anchor \
+            anchor-cli --tag v${{ env.ANCHOR_VERSION }} --locked
+      - name: Build
+        run: anchor build
+      - name: Report .so size
+        run: |
+          SOSIZE=$(wc -c < target/deploy/data_market.so)
+          echo "### Program size" >> $GITHUB_STEP_SUMMARY
+          echo "| File | Size |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|------|" >> $GITHUB_STEP_SUMMARY
+          echo "| data_market.so | $(numfmt --to=iec $SOSIZE) |" >> $GITHUB_STEP_SUMMARY
+          [ $SOSIZE -lt 1572864 ] || (echo "Binary too large!" && exit 1)
