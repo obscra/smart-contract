@@ -1,0 +1,60 @@
+name: OBSCRA Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  publish-release:
+    name: Build & Publish Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.78.0"
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install Solana CLI & Anchor
+        run: |
+          sh -c "$(curl -sSfL https://release.solana.com/v1.18.9/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+          cargo install --git https://github.com/coral-xyz/anchor \
+            anchor-cli --tag v0.30.1 --locked
+          solana-keygen new --no-bip39-passphrase --silent
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+      - run: yarn install --frozen-lockfile
+      - run: anchor build
+
+      - name: Bundle release artifacts
+        run: |
+          mkdir -p release-artifacts
+          cp target/deploy/data_market.so release-artifacts/
+          cp target/idl/data_market.json  release-artifacts/
+          cp target/types/data_market.ts  release-artifacts/ 2>/dev/null || true
+          tar czf obscra-${{ github.ref_name }}.tar.gz -C release-artifacts .
+
+      - name: Extract changelog section
+        id: notes
+        run: |
+          TAG="${{ github.ref_name }}"
+          BODY=$(awk "/^## \[${TAG}\]/{found=1; next} found && /^## /{exit} found{print}" CHANGELOG.md)
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: ${{ steps.notes.outputs.body }}
+          files: obscra-${{ github.ref_name }}.tar.gz
