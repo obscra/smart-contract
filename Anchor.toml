@@ -5,10 +5,10 @@ resolution = true
 skip-lint  = false
 
 [programs.localnet]
-data_market = "DatMktLe1AucN1oNRust1111111111111111111111111"
+data_market = "e2GDjgt6R2DW2CeYDbo1ohLAxL66rcojYyNZqcrah3EH"
 
 [programs.devnet]
-data_market = "DatMktLe1AucN1oNRust1111111111111111111111111"
+data_market = "e2GDjgt6R2DW2CeYDbo1ohLAxL66rcojYyNZqcrah3EH"
 
 [registry]
 url = "https://api.apr.dev"
