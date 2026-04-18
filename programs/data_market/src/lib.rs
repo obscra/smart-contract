@@ -14,7 +14,7 @@ pub mod utils;
 
 use instructions::*;
 
-declare_id!("DatMktLe1AucN1oNRust1111111111111111111111111");
+declare_id!("e2GDjgt6R2DW2CeYDbo1ohLAxL66rcojYyNZqcrah3EH");
 
 #[program]
 pub mod data_market {
