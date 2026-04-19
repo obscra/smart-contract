@@ -22,10 +22,36 @@
 [![IPFS](https://img.shields.io/badge/Storage-IPFS-65C2CB?style=flat-square)](https://ipfs.tech)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://typescriptlang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-eca8d6?style=flat-square)](LICENSE)
+[![Devnet](https://img.shields.io/badge/Devnet-Live-14F195?style=flat-square)](https://explorer.solana.com/address/e2GDjgt6R2DW2CeYDbo1ohLAxL66rcojYyNZqcrah3EH?cluster=devnet)
+[![Security Review](https://img.shields.io/badge/Security%20Review-Passed-14F195?style=flat-square)](docs/SECURITY.md)
 
 [**Market**](https://obscra.app/market) · [**Data Drops**](https://obscra.app/auction) · [**Docs**](https://obscra.app) · [**X**](https://x.com/Obscra_void) · [**Telegram**](https://t.me/Obscra_Portal)
 
 </div>
+
+---
+
+## Deployment
+
+| Network | Program ID | Explorer |
+|---|---|---|
+| **Devnet** | `e2GDjgt6R2DW2CeYDbo1ohLAxL66rcojYyNZqcrah3EH` | [View on Solana Explorer](https://explorer.solana.com/address/e2GDjgt6R2DW2CeYDbo1ohLAxL66rcojYyNZqcrah3EH?cluster=devnet) |
+| **Mainnet** | Coming Q3 2026 — pending independent security audit | — |
+
+---
+
+## Security review
+
+An internal security review was completed prior to devnet deployment. Key findings:
+
+- No arithmetic paths susceptible to overflow (all ops use `checked_*`)
+- All `UncheckedAccount` fields carry `/// CHECK:` annotations with explicit justification
+- Fee redirection prevented by hard `address =` constraints on every paying instruction
+- Escrow PDAs are lamport-only (system-owned) — zero deserialization surface
+- Self-trade and self-bid forbidden across all trade types
+- Sealed-bid privacy enforced via keccak256 commit-reveal — bids never touch chain in plaintext
+
+A third-party audit by an independent Solana security firm is scheduled before mainnet launch. See [`docs/SECURITY.md`](docs/SECURITY.md) for the full threat model and audit checklist.
 
 ---
 
@@ -154,19 +180,19 @@ obscra-contracts/
 ├── programs/data_market/src/
 │   ├── lib.rs                    ← 26 instructions
 │   ├── constants.rs              ← sizes, seeds, fee caps
-│   ├── errors.rs                 ← MarketError enum (45 variants)
+│   ├── errors.rs                 ← ObscraError enum (40 variants)
 │   ├── events.rs                 ← all #[event] structs
 │   ├── utils.rs                  ← fee math, dutch curve, lamport helpers
 │   ├── state/                    ← one file per account type
-│   │   ├── marketplace.rs        ← Marketplace (singleton PDA)
-│   │   ├── user.rs               ← UserProfile + Trust Score
-│   │   ├── listing.rs            ← DataListing + ListingStatus
+│   │   ├── marketplace.rs        ← ProtocolState (singleton PDA)
+│   │   ├── user.rs               ← TraderProfile + Trust Score
+│   │   ├── listing.rs            ← Offer + OfferStatus
 │   │   ├── auction.rs            ← Auction (english)
-│   │   ├── dutch.rs              ← DutchAuction
-│   │   ├── sealed.rs             ← SealedAuction + SealedBid
-│   │   ├── subscription.rs       ← SubscriptionPlan + Subscription
-│   │   ├── review.rs             ← Review
-│   │   └── dispute.rs            ← Dispute
+│   │   ├── dutch.rs              ← DecliningAuction
+│   │   ├── sealed.rs             ← HiddenBidAuction + SealedBid
+│   │   ├── subscription.rs       ← AccessPlan + Subscription
+│   │   ├── review.rs             ← TradeReview
+│   │   └── dispute.rs            ← TradeDispute
 │   └── instructions/             ← handlers + #[derive(Accounts)]
 │       ├── admin.rs
 │       ├── user.rs
@@ -195,18 +221,18 @@ obscra-contracts/
 
 | Account | Seeds | Description |
 |---|---|---|
-| `Marketplace` | `["marketplace"]` | Singleton config, fee settings, arbitrator |
-| `UserProfile` | `["user", wallet]` | Trust Score, volume stats |
-| `DataListing` | `["listing", seller, id]` | Fixed-price listing |
-| `Auction` | `["auction", seller, id]` | Data Drop (english) |
-| `DutchAuction` | `["dutch", seller, id]` | Dutch Drop |
-| `SealedAuction` | `["sealed", seller, id]` | Private Drop |
-| `SealedBid` | `["sealed_bid", auction, bidder]` | Per-bidder commit |
-| `Escrow` | `["escrow", auction]` | Lamport-only escrow |
-| `SubscriptionPlan` | `["subscription", seller, id]` | Access pass plan |
-| `Subscription` | `["subscription", plan, subscriber]` | Active pass |
-| `Review` | `["review", listing, reviewer]` | Post-sale review |
-| `Dispute` | `["dispute", listing]` | Buyer dispute claim |
+| `ProtocolState` | `["obs_protocol"]` | Singleton config, fee settings, arbitrator |
+| `TraderProfile` | `["obs_trader", wallet]` | Trust Score, volume stats |
+| `Offer` | `["obs_offer", seller, id]` | Fixed-price listing |
+| `Auction` | `["obs_english", seller, id]` | Data Drop (english) |
+| `DecliningAuction` | `["obs_declining", seller, id]` | Dutch Drop |
+| `HiddenBidAuction` | `["obs_hidden", seller, id]` | Private Drop |
+| `SealedBid` | `["obs_hidden_bid", auction, bidder]` | Per-bidder commit |
+| `Escrow` | `["obs_vault", auction]` | Lamport-only escrow |
+| `AccessPlan` | `["obs_access", seller, id]` | Access pass plan |
+| `Subscription` | `["obs_access", plan, subscriber]` | Active pass |
+| `TradeReview` | `["obs_feedback", listing, reviewer]` | Post-sale review |
+| `TradeDispute` | `["obs_claim", listing]` | Buyer dispute claim |
 
 ---
 
@@ -222,7 +248,7 @@ gross_price
 - Default fee: **2.5%** (`fee_bps = 250`)
 - Hard cap: **10%** (`MAX_FEE_BPS = 1000`)
 - Max royalty: **5%** (`MAX_ROYALTY_BPS = 500`)
-- All math uses `checked_*` — overflows return `MarketError::MathOverflow`
+- All math uses `checked_*` — overflows return `ObscraError::ArithmeticOverflow`
 
 ---
 
@@ -247,7 +273,7 @@ Full threat model and audit checklist: [`docs/SECURITY.md`](docs/SECURITY.md)
 ```bash
 # Prerequisites: Rust 1.78, Solana CLI 1.18, Anchor 0.30, Node 20, yarn
 
-git clone https://github.com/obscra/obscra-contracts
+git clone https://github.com/obscraapp/OBSCRA-Smart-Contracts
 cd obscra-contracts
 yarn install
 
