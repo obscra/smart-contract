@@ -1,0 +1,7 @@
+# Tell GitHub Linguist to include these directories in language stats
+tests/**/*.ts linguist-detectable=true
+scripts/**/*.ts linguist-detectable=true
+migrations/**/*.ts linguist-detectable=true
+indexer/**/*.ts linguist-detectable=true
+app/**/*.ts linguist-detectable=true
+app/**/*.html linguist-detectable=true
