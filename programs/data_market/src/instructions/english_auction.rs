@@ -191,6 +191,7 @@ pub fn cancel_english(ctx: Context<CancelEnglish>) -> Result<()> {
     let auction = &mut ctx.accounts.auction;
     require!(auction.status == EnglishStatus::Active, ObscraError::EnglishNotLive);
     require!(auction.highest_bid == 0, ObscraError::CancelBlockedByBids);
+    require!(now()? < auction.end_time, ObscraError::EnglishExpired);
     require_keys_eq!(auction.seller, ctx.accounts.seller.key(), ObscraError::Unauthorized);
     auction.status = EnglishStatus::Cancelled;
     emit!(EnglishCancelled { auction: auction.key() });

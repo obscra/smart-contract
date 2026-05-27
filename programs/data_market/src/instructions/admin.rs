@@ -8,6 +8,11 @@ use crate::events::*;
 use crate::state::*;
 
 pub fn bootstrap_protocol(ctx: Context<BootstrapProtocol>, fee_bps: u16) -> Result<()> {
+    require_keys_eq!(
+        ctx.accounts.authority.key(),
+        BOOTSTRAP_AUTHORITY,
+        ObscraError::Unauthorized
+    );
     require!(fee_bps <= FEE_CEILING_BPS, ObscraError::FeeTooHigh);
 
     let mp = &mut ctx.accounts.protocol;

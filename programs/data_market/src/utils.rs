@@ -10,6 +10,10 @@ pub fn current_ts() -> Result<i64> {
     Ok(Clock::get()?.unix_timestamp)
 }
 
+pub fn now() -> Result<i64> {
+    current_ts()
+}
+
 pub fn compute_fee_split(
     price: u64,
     fee_bps: u16,

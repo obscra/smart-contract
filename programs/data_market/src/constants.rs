@@ -1,6 +1,19 @@
 //! OBSCRA protocol constants — tuneable parameters, PDA seeds, and size guards.
 
+use anchor_lang::prelude::*;
+
 pub const PROTOCOL_VERSION: u8 = 1;
+
+// ── Deployment authority ───────────────────────────────────────────────────
+//
+// Pubkey hardcoded here is the ONLY wallet allowed to call `bootstrap_protocol`.
+// Prevents an attacker from frontrunning the singleton initialization and
+// seizing the protocol authority/treasury/arbitrator slots.
+//
+// MUST be updated to the actual deployer wallet before any deployment to a
+// fresh program_id (mainnet, new devnet redeploy, etc.). Leaving this as
+// Pubkey::default() will brick bootstrap on a fresh deployment.
+pub const BOOTSTRAP_AUTHORITY: Pubkey = pubkey!("11111111111111111111111111111111");
 
 // ── Buffer capacity limits ──────────────────────────────────────────────────
 
