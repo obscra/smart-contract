@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OBSCRA — Decentralized Data Marketplace on Solana</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+    * { font-family: 'Inter', sans-serif; }
+    code, .mono { font-family: 'JetBrains Mono', monospace; }
+    .glow { box-shadow: 0 0 30px rgba(153, 69, 255, 0.25); }
+    .glow-accent { box-shadow: 0 0 20px rgba(20, 241, 149, 0.15); }
+    .gradient-text {
+      background: linear-gradient(135deg, #9945FF 0%, #14F195 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .panel {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+    }
+    .tab-selected {
+      background: linear-gradient(135deg, #9945FF22, #14F19522);
+      border-bottom: 2px solid #9945FF;
+    }
+    .pill { font-size: 10px; padding: 2px 8px; border-radius: 999px; }
+    .tabular { font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body class="bg-[#0a0a0f] text-white min-h-screen">
+
+  <!-- ── NAV ────────────────────────────────────────────────────────── -->
+  <nav class="border-b border-white/5 px-6 py-4 flex items-center justify-between sticky top-0 z-50 bg-[#0a0a0f]/90 backdrop-blur">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#9945FF] to-[#14F195] flex items-center justify-center text-sm font-bold">O</div>
+      <span class="font-semibold text-lg tracking-tight"><span class="gradient-text">OBSCRA</span></span>
+      <span class="pill bg-[#9945FF]/20 text-[#9945FF] border border-[#9945FF]/30 ml-2">devnet</span>
+    </div>
+
+    <div class="hidden md:flex items-center gap-6 text-sm text-white/60">
+      <a href="#listings"      class="hover:text-white transition">Listings</a>
+      <a href="#auctions"      class="hover:text-white transition">Auctions</a>
+      <a href="#subscriptions" class="hover:text-white transition">Subscriptions</a>
+      <a href="#profile"       class="hover:text-white transition">Profile</a>
+    </div>
+
+    <button id="walletBtn"
+      class="px-4 py-2 rounded-lg bg-gradient-to-r from-[#9945FF] to-[#14F195] text-sm font-medium hover:opacity-90 transition">
+      Connect Wallet
+    </button>
+  </nav>
+
+  <!-- ── HERO ───────────────────────────────────────────────────────── -->
+  <section class="px-6 py-20 text-center max-w-4xl mx-auto">
+    <div class="inline-block pill bg-[#14F195]/10 text-[#14F195] border border-[#14F195]/20 mb-6 text-xs tracking-widest uppercase">
+      Non-custodial · On-chain settlement · Solana
+    </div>
+    <h1 class="text-5xl md:text-6xl font-bold leading-tight mb-6">
+      Trade, Auction &amp; Stream<br/>
+      <span class="gradient-text">Encrypted Data</span>
+    </h1>
+    <p class="text-white/50 text-lg max-w-xl mx-auto mb-10">
+      OBSCRA is the first fully on-chain data marketplace featuring English, Dutch, and
+      sealed-bid auctions, subscription access, and arbitrated dispute resolution — all
+      settled natively on Solana.
+    </p>
+    <div class="flex gap-4 justify-center flex-wrap">
+      <button class="px-6 py-3 rounded-xl bg-gradient-to-r from-[#9945FF] to-[#14F195] font-semibold hover:opacity-90 transition glow">
+        Browse Listings
+      </button>
+      <button class="px-6 py-3 rounded-xl panel font-semibold hover:bg-white/5 transition">
+        Sell Your Data →
+      </button>
+    </div>
+
+    <!-- stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16">
+      <div class="panel rounded-xl p-4">
+        <div class="text-2xl font-bold gradient-text" id="metricListings">—</div>
+        <div class="text-xs text-white/40 mt-1">Total Listings</div>
+      </div>
+      <div class="panel rounded-xl p-4">
+        <div class="text-2xl font-bold gradient-text" id="metricAuctions">—</div>
+        <div class="text-xs text-white/40 mt-1">Live Auctions</div>
+      </div>
+      <div class="panel rounded-xl p-4">
+        <div class="text-2xl font-bold gradient-text" id="metricVolume">—</div>
+        <div class="text-xs text-white/40 mt-1">Volume (SOL)</div>
+      </div>
+      <div class="panel rounded-xl p-4">
+        <div class="text-2xl font-bold gradient-text" id="metricSubs">—</div>
+        <div class="text-xs text-white/40 mt-1">Active Subscriptions</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TABS ───────────────────────────────────────────────────────── -->
+  <section class="px-6 max-w-6xl mx-auto" id="listings">
+    <div class="flex gap-1 border-b border-white/5 mb-8 overflow-x-auto">
+      <button data-tab="listings"      class="tab px-5 py-3 text-sm font-medium transition tab-selected">Fixed Price</button>
+      <button data-tab="auctions"      class="tab px-5 py-3 text-sm font-medium text-white/40 transition hover:text-white">English Auctions</button>
+      <button data-tab="dutch"         class="tab px-5 py-3 text-sm font-medium text-white/40 transition hover:text-white">Dutch Auctions</button>
+      <button data-tab="sealed"        class="tab px-5 py-3 text-sm font-medium text-white/40 transition hover:text-white">Sealed Bid</button>
+      <button data-tab="subscriptions" class="tab px-5 py-3 text-sm font-medium text-white/40 transition hover:text-white">Subscriptions</button>
+    </div>
+
+    <div id="tab-listings"      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    <div id="tab-auctions"      class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    <div id="tab-dutch"         class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    <div id="tab-sealed"        class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    <div id="tab-subscriptions" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+  </section>
+
+  <!-- ── LIST MODAL ─────────────────────────────────────────────────── -->
+  <div id="listModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+    <div class="panel rounded-2xl p-8 w-full max-w-lg glow">
+      <h2 class="text-xl font-semibold mb-6">List Data Asset</h2>
+      <div class="space-y-4">
+        <input id="fieldTitle" type="text" placeholder="Title"
+          class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#9945FF]" />
+        <textarea id="fieldDesc" rows="2" placeholder="Description"
+          class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#9945FF]"></textarea>
+        <div class="grid grid-cols-2 gap-3">
+          <input id="fieldPrice" type="number" step="0.01" placeholder="Price (SOL)"
+            class="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#9945FF]" />
+          <select id="fieldCategory"
+            class="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#9945FF]">
+            <option>market-data</option>
+            <option>ml-models</option>
+            <option>signals</option>
+            <option>research</option>
+            <option>api-access</option>
+          </select>
+        </div>
+        <input id="fieldUri" type="text" placeholder="Data URI (ipfs://...)"
+          class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm mono focus:outline-none focus:border-[#9945FF]" />
+      </div>
+      <div class="flex gap-3 mt-6">
+        <button onclick="document.getElementById('listModal').classList.add('hidden')"
+          class="flex-1 py-3 rounded-lg panel text-sm font-medium hover:bg-white/5">Cancel</button>
+        <button id="submitListBtn"
+          class="flex-1 py-3 rounded-lg bg-gradient-to-r from-[#9945FF] to-[#14F195] text-sm font-semibold hover:opacity-90">
+          Publish Listing
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TOAST ──────────────────────────────────────────────────────── -->
+  <div id="toast" class="hidden fixed bottom-6 right-6 panel rounded-xl px-5 py-3 text-sm glow-accent border-[#14F195]/30 max-w-sm"></div>
+
+  <!-- ── SCRIPT ─────────────────────────────────────────────────────── -->
+  <script>
+    // ── sample data ───────────────────────────────────────────────────
+    const SAMPLE_LISTINGS = [
+      { id: 1, title: "ETH/USD 1-min OHLCV 2024",     category: "market-data", price: 1.5, seller: "8xYz...mN3p", tags: ["crypto","ohlcv"],       preview: "12-month tick-by-tick candles for ETH/USD, CSV + Parquet format." },
+      { id: 2, title: "GPT-4 Synthetic Q&A Dataset",   category: "ml-models",   price: 3.2, seller: "4aKw...jQ7r", tags: ["nlp","fine-tune"],       preview: "500 k instruction pairs for LLM fine-tuning, Apache-2 license." },
+      { id: 3, title: "Solana Whale Alert Feed Q1",    category: "signals",     price: 0.8, seller: "2rTp...bL9s", tags: ["on-chain","whale"],      preview: "All >$500 k SOL transfers with wallet labels, Jan – Mar 2026." },
+      { id: 4, title: "DeFi Alpha Report — April 2026",category: "research",    price: 2.0, seller: "9nWm...cF4k", tags: ["defi","alpha"],          preview: "37-page proprietary analysis covering top-10 protocols." },
+      { id: 5, title: "Birdeye API Pro Key (30 days)", category: "api-access",  price: 0.5, seller: "6vHq...dE2x", tags: ["api","birdeye"],         preview: "Resold premium key — 30-day access, 1 M calls / day." },
+      { id: 6, title: "NFT Floor-Price Time Series",   category: "market-data", price: 1.1, seller: "3mJs...hA8t", tags: ["nft","floor"],           preview: "15 collections tracked hourly for 90 days." },
+    ];
+
+    const SAMPLE_AUCTIONS = [
+      { id: 1, title: "Proprietary HFT Signal Bundle",  category: "signals",     topBid: 4.5, endDelta: 3600 * 2, bids: 7,  seller: "1fGh...pX5u" },
+      { id: 2, title: "Rare On-Chain Label Dataset",     category: "ml-models",   topBid: 2.1, endDelta: 3600 * 8, bids: 3,  seller: "5kRn...vY0w" },
+      { id: 3, title: "Cross-Exchange Arbitrage Logs",   category: "market-data", topBid: 6.0, endDelta: 900,      bids: 12, seller: "7bLe...qM6z" },
+    ];
+
+    const SAMPLE_DUTCH = [
+      { id: 1, title: "Crypto Twitter Sentiment DB", ceiling: 5.0, floor: 0.5, category: "market-data", endDelta: 3600 },
+      { id: 2, title: "MEV Bundle Archive 2025",     ceiling: 8.0, floor: 1.0, category: "research",    endDelta: 7200 },
+    ];
+
+    const SAMPLE_SUBS = [
+      { id: 1, title: "Daily Macro Signals API",  category: "signals",     perDay: 0.05, subscribers: 142 },
+      { id: 2, title: "NFT Mint Alert WebSocket", category: "api-access",  perDay: 0.02, subscribers: 89  },
+      { id: 3, title: "On-chain Data Stream Pro",  category: "market-data", perDay: 0.08, subscribers: 213 },
+    ];
+
+    // ── rendering ─────────────────────────────────────────────────────
+    const CATEGORY_STYLES = {
+      "market-data": "text-blue-400 bg-blue-400/10 border-blue-400/20",
+      "ml-models":   "text-purple-400 bg-purple-400/10 border-purple-400/20",
+      "signals":     "text-green-400 bg-green-400/10 border-green-400/20",
+      "research":    "text-yellow-400 bg-yellow-400/10 border-yellow-400/20",
+      "api-access":  "text-pink-400 bg-pink-400/10 border-pink-400/20",
+    };
+
+    function categoryPill(cat) {
+      const cls = CATEGORY_STYLES[cat] ?? "text-white/50 bg-white/5 border-white/10";
+      return `<span class="pill border ${cls}">${cat}</span>`;
+    }
+
+    function truncateAddr(addr) {
+      return `${addr.slice(0, 4)}…${addr.slice(-4)}`;
+    }
+
+    function fmtCountdown(totalSec) {
+      const h = Math.floor(totalSec / 3600);
+      const m = Math.floor((totalSec % 3600) / 60);
+      const s = totalSec % 60;
+      return `${h > 0 ? h + "h " : ""}${m}m ${s}s`;
+    }
+
+    function renderListingCard(item) {
+      return `
+        <div class="panel rounded-2xl p-5 hover:bg-white/5 transition cursor-pointer group">
+          <div class="flex items-start justify-between mb-3">
+            ${categoryPill(item.category)}
+            <span class="text-white/30 text-xs mono">${truncateAddr(item.seller)}</span>
+          </div>
+          <h3 class="font-semibold text-sm mb-2 group-hover:text-[#14F195] transition">${item.title}</h3>
+          <p class="text-white/40 text-xs mb-4 leading-relaxed">${item.preview}</p>
+          <div class="flex gap-1 mb-4 flex-wrap">
+            ${item.tags.map(t => `<span class="pill bg-white/5 border border-white/10 text-white/40">#${t}</span>`).join("")}
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-lg font-bold">${item.price} <span class="text-[#9945FF] text-sm">SOL</span></div>
+              <div class="text-xs text-white/30">≈ $${(item.price * 165).toFixed(0)} USD</div>
+            </div>
+            <button onclick="onBuy(${item.id})"
+              class="px-4 py-2 rounded-lg bg-gradient-to-r from-[#9945FF] to-[#14F195] text-xs font-semibold hover:opacity-90 transition">
+              Buy Now
+            </button>
+          </div>
+        </div>`;
+    }
+
+    function renderAuctionCard(item) {
+      return `
+        <div class="panel rounded-2xl p-5 hover:bg-white/5 transition cursor-pointer group">
+          <div class="flex items-start justify-between mb-3">
+            ${categoryPill(item.category)}
+            <span class="pill bg-red-500/10 text-red-400 border border-red-500/20">LIVE</span>
+          </div>
+          <h3 class="font-semibold text-sm mb-3 group-hover:text-[#14F195] transition">${item.title}</h3>
+          <div class="flex justify-between text-xs mb-4">
+            <div><div class="text-white/40">Top Bid</div><div class="text-lg font-bold">${item.topBid} SOL</div></div>
+            <div class="text-right"><div class="text-white/40">Bids</div><div class="text-lg font-bold">${item.bids}</div></div>
+          </div>
+          <div class="bg-white/5 rounded-lg p-3 mb-4">
+            <div class="text-xs text-white/40 mb-1">Ends in</div>
+            <div class="tabular text-sm font-mono font-bold text-[#14F195]" data-end="${Date.now() + item.endDelta * 1000}">
+              ${fmtCountdown(item.endDelta)}
+            </div>
+          </div>
+          <button onclick="onBid(${item.id})"
+            class="w-full py-2 rounded-lg border border-[#9945FF]/40 text-[#9945FF] text-xs font-semibold hover:bg-[#9945FF]/10 transition">
+            Place Bid →
+          </button>
+        </div>`;
+    }
+
+    function renderDutchCard(item) {
+      const currentPrice = item.ceiling - (item.ceiling - item.floor) * 0.3;
+      return `
+        <div class="panel rounded-2xl p-5 hover:bg-white/5 transition cursor-pointer group">
+          <div class="flex items-start justify-between mb-3">
+            ${categoryPill(item.category)}
+            <span class="pill bg-orange-500/10 text-orange-400 border border-orange-500/20">↓ DUTCH</span>
+          </div>
+          <h3 class="font-semibold text-sm mb-3 group-hover:text-[#14F195] transition">${item.title}</h3>
+          <div class="mb-3">
+            <div class="flex justify-between text-xs text-white/40 mb-1">
+              <span>Floor ${item.floor} SOL</span><span>Start ${item.ceiling} SOL</span>
+            </div>
+            <div class="h-2 rounded-full bg-white/5">
+              <div class="h-2 rounded-full bg-gradient-to-r from-[#9945FF] to-[#14F195]" style="width:70%"></div>
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-xs text-white/40">Current Price</div>
+              <div class="text-xl font-bold">${currentPrice.toFixed(2)} <span class="text-[#9945FF] text-sm">SOL</span></div>
+            </div>
+            <button onclick="onFillDutch(${item.id})"
+              class="px-4 py-2 rounded-lg bg-orange-500/20 border border-orange-500/30 text-orange-400 text-xs font-semibold hover:bg-orange-500/30 transition">
+              Buy Now
+            </button>
+          </div>
+        </div>`;
+    }
+
+    function renderSubCard(item) {
+      return `
+        <div class="panel rounded-2xl p-5 hover:bg-white/5 transition cursor-pointer group">
+          <div class="flex items-start justify-between mb-3">
+            ${categoryPill(item.category)}
+            <span class="text-xs text-white/30">${item.subscribers} subscribers</span>
+          </div>
+          <h3 class="font-semibold text-sm mb-4 group-hover:text-[#14F195] transition">${item.title}</h3>
+          <div class="grid grid-cols-3 gap-2 mb-4">
+            ${[7, 30, 90].map(d => `
+              <button onclick="onSubscribe(${item.id}, ${d})"
+                class="py-2 rounded-lg panel text-xs text-center hover:bg-white/5 transition">
+                <div class="font-bold">${(item.perDay * d).toFixed(2)} SOL</div>
+                <div class="text-white/40">${d}d</div>
+              </button>`).join("")}
+          </div>
+          <div class="text-xs text-white/30 text-center">${item.perDay} SOL / day</div>
+        </div>`;
+    }
+
+    // ── mount cards ───────────────────────────────────────────────────
+    document.getElementById("tab-listings").innerHTML      = SAMPLE_LISTINGS.map(renderListingCard).join("");
+    document.getElementById("tab-auctions").innerHTML      = SAMPLE_AUCTIONS.map(renderAuctionCard).join("");
+    document.getElementById("tab-dutch").innerHTML         = SAMPLE_DUTCH.map(renderDutchCard).join("");
+    document.getElementById("tab-subscriptions").innerHTML = SAMPLE_SUBS.map(renderSubCard).join("");
+
+    document.getElementById("metricListings").textContent = SAMPLE_LISTINGS.length;
+    document.getElementById("metricAuctions").textContent = SAMPLE_AUCTIONS.length;
+    document.getElementById("metricVolume").textContent   = "1,247";
+    document.getElementById("metricSubs").textContent     = "444";
+
+    // ── tab switching ─────────────────────────────────────────────────
+    document.querySelectorAll(".tab").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(b => {
+          b.classList.remove("tab-selected");
+          b.classList.add("text-white/40");
+        });
+        btn.classList.add("tab-selected");
+        btn.classList.remove("text-white/40");
+
+        const target = btn.dataset.tab;
+        ["listings", "auctions", "dutch", "sealed", "subscriptions"].forEach(key => {
+          document.getElementById(`tab-${key}`).classList.toggle("hidden", key !== target);
+        });
+      });
+    });
+
+    // ── countdown tick ────────────────────────────────────────────────
+    setInterval(() => {
+      document.querySelectorAll("[data-end]").forEach(el => {
+        const remaining = Math.max(0, Math.floor((+el.dataset.end - Date.now()) / 1000));
+        el.textContent = fmtCountdown(remaining);
+      });
+    }, 1000);
+
+    // ── wallet / actions (demo stubs) ─────────────────────────────────
+    let connected = false;
+    let pubkey    = null;
+
+    document.getElementById("walletBtn").addEventListener("click", async () => {
+      if (typeof window.solana !== "undefined") {
+        try {
+          const resp = await window.solana.connect();
+          pubkey    = resp.publicKey.toString();
+          connected = true;
+          document.getElementById("walletBtn").textContent =
+            pubkey.slice(0, 4) + "…" + pubkey.slice(-4);
+          notify("Wallet connected", "green");
+        } catch (_) {
+          notify("Connection rejected", "red");
+        }
+      } else {
+        notify("Phantom wallet not found — install at phantom.app", "red");
+      }
+    });
+
+    function requireWallet() {
+      if (!connected) { notify("Connect your wallet first", "orange"); return false; }
+      return true;
+    }
+
+    function onBuy(id) {
+      if (!requireWallet()) return;
+      notify(`Initiating purchase for listing #${id} — sign in wallet`, "green");
+    }
+    function onBid(id) {
+      if (!requireWallet()) return;
+      const amount = prompt("Enter bid amount (SOL):");
+      if (!amount) return;
+      notify(`Placing bid of ${amount} SOL on auction #${id}`, "green");
+    }
+    function onFillDutch(id) {
+      if (!requireWallet()) return;
+      notify(`Filling dutch auction #${id} at current price`, "green");
+    }
+    function onSubscribe(id, days) {
+      if (!requireWallet()) return;
+      notify(`Subscribing to plan #${id} for ${days} days — sign in wallet`, "green");
+    }
+
+    function notify(msg, color = "green") {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.remove("hidden");
+      el.style.borderColor = color === "green" ? "#14F195" : color === "orange" ? "#f97316" : "#ef4444";
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => el.classList.add("hidden"), 4000);
+    }
+  </script>
+</body>
+</html>
