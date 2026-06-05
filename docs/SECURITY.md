@@ -54,8 +54,9 @@
 The SDK exposes `guardUploadedFile()` for DApp upload flows before client-side
 encryption and IPFS pinning. The guard is intentionally off-chain and does not
 change the settlement contract. It rejects high-confidence executable payloads,
-flags suspicious archives/scripts, applies configurable MIME allowlists and size
-limits, and returns a stable checksum for moderation or incident review.
+flags suspicious archives/scripts, applies configurable MIME allowlists and a
+2 GiB encrypted-object upload envelope by default, and returns a stable checksum
+for moderation or incident review.
 
 This is a defense-in-depth preflight and should be paired with provider-side
 malware scanning in production upload infrastructure.

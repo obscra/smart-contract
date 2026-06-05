@@ -55,7 +55,7 @@
   <!-- ── HERO ───────────────────────────────────────────────────────── -->
   <section class="px-6 py-20 text-center max-w-4xl mx-auto">
     <div class="inline-block pill bg-[#14F195]/10 text-[#14F195] border border-[#14F195]/20 mb-6 text-xs tracking-widest uppercase">
-      Non-custodial · On-chain settlement · Solana
+      Non-custodial · On-chain settlement · Solana · 2 GiB uploads
     </div>
     <h1 class="text-5xl md:text-6xl font-bold leading-tight mb-6">
       Trade, Auction &amp; Stream<br/>
@@ -64,7 +64,7 @@
     <p class="text-white/50 text-lg max-w-xl mx-auto mb-10">
       OBSCRA is the first fully on-chain data marketplace featuring English, Dutch, and
       sealed-bid auctions, subscription access, and arbitrated dispute resolution — all
-      settled natively on Solana.
+      settled natively on Solana with a 2 GiB encrypted upload envelope.
     </p>
     <div class="flex gap-4 justify-center flex-wrap">
       <button class="px-6 py-3 rounded-xl bg-gradient-to-r from-[#9945FF] to-[#14F195] font-semibold hover:opacity-90 transition glow">
@@ -92,6 +92,13 @@
       <div class="panel rounded-xl p-4">
         <div class="text-2xl font-bold gradient-text" id="metricSubs">—</div>
         <div class="text-xs text-white/40 mt-1">Active Subscriptions</div>
+      </div>
+      <div class="panel rounded-xl p-4 md:col-span-4">
+        <div class="flex items-center justify-center gap-3 flex-wrap">
+          <span class="pill bg-[#14F195]/10 text-[#14F195] border border-[#14F195]/20 uppercase tracking-widest">Large Object Tier</span>
+          <span class="text-2xl font-bold gradient-text">2 GiB</span>
+          <span class="text-xs text-white/40">encrypted upload envelope · multipart preflight · checksum indexed</span>
+        </div>
       </div>
     </div>
   </section>
@@ -136,6 +143,16 @@
         </div>
         <input id="fieldUri" type="text" placeholder="Data URI (ipfs://...)"
           class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm mono focus:outline-none focus:border-[#9945FF]" />
+        <div class="rounded-xl border border-[#14F195]/20 bg-[#14F195]/5 p-4">
+          <div class="flex items-center justify-between gap-3 mb-2">
+            <span class="text-xs uppercase tracking-widest text-[#14F195]">Upload Guard</span>
+            <span class="pill bg-[#9945FF]/20 text-[#9945FF] border border-[#9945FF]/30">2 GiB enabled</span>
+          </div>
+          <div class="text-xs text-white/45 leading-relaxed">
+            Large-object policy supports multipart encrypted preflight, SHA-256 manifesting,
+            MIME allowlisting, and decentralized storage handoff for files up to 2 GiB.
+          </div>
+        </div>
       </div>
       <div class="flex gap-3 mt-6">
         <button onclick="document.getElementById('listModal').classList.add('hidden')"
@@ -341,7 +358,7 @@
       });
     }, 1000);
 
-    // ── wallet / actions (demo stubs) ─────────────────────────────────
+    // ── wallet / actions ──────────────────────────────────────────────
     let connected = false;
     let pubkey    = null;
 

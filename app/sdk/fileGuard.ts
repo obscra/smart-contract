@@ -26,7 +26,10 @@ export interface FileGuardResult {
   findings: FileGuardFinding[];
 }
 
-const DEFAULT_MAX_BYTES = 250 * 1024 * 1024;
+export const UPLOAD_LIMIT_GIB = 2;
+export const DEFAULT_MAX_BYTES = UPLOAD_LIMIT_GIB * 1024 * 1024 * 1024;
+
+const DEFAULT_UPLOAD_POLICY_LABEL = `${UPLOAD_LIMIT_GIB} GiB encrypted object envelope`;
 
 const DEFAULT_BLOCKED_EXTENSIONS = [
   ".app",
@@ -129,7 +132,7 @@ export async function guardUploadedFile(
     findings.push({
       code: "file_too_large",
       severity: "high",
-      message: `Upload rejected because the file exceeds ${maxBytes} bytes.`,
+      message: `Upload rejected because the file exceeds the active ${formatBytes(maxBytes)} upload envelope.`,
     });
   }
 
@@ -193,11 +196,28 @@ export async function guardUploadedFile(
     });
   }
 
+  if (!findings.length && maxBytes === DEFAULT_MAX_BYTES) {
+    findings.push({
+      code: "large_object_tier_2gb",
+      severity: "low",
+      message: `Upload preflight passed under the ${DEFAULT_UPLOAD_POLICY_LABEL} policy.`,
+    });
+  }
+
   return {
     accepted: !findings.some((finding) => finding.severity === "high"),
     checksum,
     findings,
   };
+}
+
+function formatBytes(bytes: number): string {
+  const gib = bytes / (1024 * 1024 * 1024);
+  if (gib >= 1) {
+    return `${Number.isInteger(gib) ? gib : gib.toFixed(2)} GiB`;
+  }
+  const mib = bytes / (1024 * 1024);
+  return `${Number.isInteger(mib) ? mib : mib.toFixed(2)} MiB`;
 }
 
 function hasPrefix(bytes: Uint8Array, signature: number[]): boolean {

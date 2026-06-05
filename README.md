@@ -255,6 +255,7 @@ gross_price
 ## Security
 
 - **AES-256 client-side encryption** — files encrypt in the browser before IPFS upload; OBSCRA never holds a plaintext key
+- **2 GiB large-object upload envelope** — SDK/UI policy supports multipart preflight, checksum manifesting, and encrypted IPFS handoff for bigger data assets
 - **Escrow PDAs** are system-owned lamport-only accounts — zero deserialization attack surface
 - **`has_one` constraints** verify seller ownership without extra signatures
 - **`address = marketplace.treasury`** prevents fee redirection by malicious callers
