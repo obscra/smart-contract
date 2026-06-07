@@ -13,6 +13,21 @@ export interface FileGuardOptions {
   scanTextPayloads?: boolean;
 }
 
+export interface FileMetadataDescriptor {
+  fileName: string;
+  mimeType: string;
+  sizeBytes: number;
+  sizeLabel: string;
+  checksum: string;
+  extension: string;
+  contentClass: string;
+  storageEnvelope: string;
+  chunkCount: number;
+  chunkSizeBytes: number;
+  encryptedManifestVersion: string;
+  indexedAt: string;
+}
+
 export interface FileGuardInput {
   name: string;
   mimeType?: string;
@@ -23,6 +38,7 @@ export interface FileGuardInput {
 export interface FileGuardResult {
   accepted: boolean;
   checksum: string;
+  metadata: FileMetadataDescriptor;
   findings: FileGuardFinding[];
 }
 
@@ -207,8 +223,46 @@ export async function guardUploadedFile(
   return {
     accepted: !findings.some((finding) => finding.severity === "high"),
     checksum,
+    metadata: buildFileMetadata(input, checksum, maxBytes),
     findings,
   };
+}
+
+function buildFileMetadata(
+  input: FileGuardInput,
+  checksum: string,
+  maxBytes: number,
+): FileMetadataDescriptor {
+  const extension = extractExtension(input.name);
+  const chunkSizeBytes = 16 * 1024 * 1024;
+  return {
+    fileName: input.name,
+    mimeType: input.mimeType || "application/octet-stream",
+    sizeBytes: input.size,
+    sizeLabel: formatBytes(input.size),
+    checksum,
+    extension,
+    contentClass: classifyContent(input.mimeType, extension),
+    storageEnvelope: formatBytes(maxBytes),
+    chunkCount: Math.max(1, Math.ceil(input.size / chunkSizeBytes)),
+    chunkSizeBytes,
+    encryptedManifestVersion: "obscra.manifest.v1",
+    indexedAt: new Date().toISOString(),
+  };
+}
+
+function extractExtension(name: string): string {
+  const dot = name.lastIndexOf(".");
+  return dot >= 0 ? name.slice(dot).toLowerCase() : "";
+}
+
+function classifyContent(mimeType: string | undefined, extension: string): string {
+  const mime = mimeType?.toLowerCase() ?? "";
+  if (mime.includes("json") || [".json", ".jsonl"].includes(extension)) return "structured-data";
+  if (mime.includes("csv") || [".csv", ".parquet", ".avro"].includes(extension)) return "market-dataset";
+  if (mime.startsWith("image/") || mime.startsWith("video/")) return "media-asset";
+  if ([".onnx", ".pt", ".safetensors", ".bin"].includes(extension)) return "model-artifact";
+  return "encrypted-object";
 }
 
 function formatBytes(bytes: number): string {

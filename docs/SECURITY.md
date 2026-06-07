@@ -56,7 +56,12 @@ encryption and IPFS pinning. The guard is intentionally off-chain and does not
 change the settlement contract. It rejects high-confidence executable payloads,
 flags suspicious archives/scripts, applies configurable MIME allowlists and a
 2 GiB encrypted-object upload envelope by default, and returns a stable checksum
-for moderation or incident review.
+plus a structured file metadata descriptor for moderation or incident review.
+
+The returned metadata descriptor includes normalized file name, MIME type, byte
+size, human-readable size label, extension, content class, chunk count, envelope
+limit, checksum, encrypted manifest version, and indexing timestamp. This keeps
+marketplace listings auditable without placing raw payload contents on-chain.
 
 This is a defense-in-depth preflight and should be paired with provider-side
 malware scanning in production upload infrastructure.

@@ -7,6 +7,7 @@ export {
   guardUploadedFile,
   type FileGuardFinding,
   type FileGuardInput,
+  type FileMetadataDescriptor,
   type FileGuardOptions,
   type FileGuardResult,
   type GuardSeverity,

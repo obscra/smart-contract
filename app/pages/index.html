@@ -143,6 +143,16 @@
         </div>
         <input id="fieldUri" type="text" placeholder="Data URI (ipfs://...)"
           class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm mono focus:outline-none focus:border-[#9945FF]" />
+        <div class="grid grid-cols-2 gap-3">
+          <input id="fieldFileName" type="text" placeholder="File name"
+            class="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm mono focus:outline-none focus:border-[#9945FF]" />
+          <input id="fieldFileSize" type="text" placeholder="File size, e.g. 1.42 GiB"
+            class="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#9945FF]" />
+          <input id="fieldMime" type="text" placeholder="MIME type"
+            class="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#9945FF]" />
+          <input id="fieldChecksum" type="text" placeholder="SHA-256 checksum"
+            class="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm mono focus:outline-none focus:border-[#9945FF]" />
+        </div>
         <div class="rounded-xl border border-[#14F195]/20 bg-[#14F195]/5 p-4">
           <div class="flex items-center justify-between gap-3 mb-2">
             <span class="text-xs uppercase tracking-widest text-[#14F195]">Upload Guard</span>
@@ -172,12 +182,12 @@
   <script>
     // ── sample data ───────────────────────────────────────────────────
     const SAMPLE_LISTINGS = [
-      { id: 1, title: "ETH/USD 1-min OHLCV 2024",     category: "market-data", price: 1.5, seller: "8xYz...mN3p", tags: ["crypto","ohlcv"],       preview: "12-month tick-by-tick candles for ETH/USD, CSV + Parquet format." },
-      { id: 2, title: "GPT-4 Synthetic Q&A Dataset",   category: "ml-models",   price: 3.2, seller: "4aKw...jQ7r", tags: ["nlp","fine-tune"],       preview: "500 k instruction pairs for LLM fine-tuning, Apache-2 license." },
-      { id: 3, title: "Solana Whale Alert Feed Q1",    category: "signals",     price: 0.8, seller: "2rTp...bL9s", tags: ["on-chain","whale"],      preview: "All >$500 k SOL transfers with wallet labels, Jan – Mar 2026." },
-      { id: 4, title: "DeFi Alpha Report — April 2026",category: "research",    price: 2.0, seller: "9nWm...cF4k", tags: ["defi","alpha"],          preview: "37-page proprietary analysis covering top-10 protocols." },
-      { id: 5, title: "Birdeye API Pro Key (30 days)", category: "api-access",  price: 0.5, seller: "6vHq...dE2x", tags: ["api","birdeye"],         preview: "Resold premium key — 30-day access, 1 M calls / day." },
-      { id: 6, title: "NFT Floor-Price Time Series",   category: "market-data", price: 1.1, seller: "3mJs...hA8t", tags: ["nft","floor"],           preview: "15 collections tracked hourly for 90 days." },
+      { id: 1, title: "ETH/USD 1-min OHLCV 2024",      category: "market-data", price: 1.5, seller: "8xYz...mN3p", tags: ["crypto","ohlcv"],  preview: "12-month tick-by-tick candles for ETH/USD, CSV + Parquet format.", metadata: { file: "eth_usd_ohlcv_2024.parquet", size: "1.42 GiB", type: "Parquet", checksum: "sha256:7c4f…91ab", chunks: 91, encrypted: "AES-256-GCM" } },
+      { id: 2, title: "GPT-4 Synthetic Q&A Dataset",    category: "ml-models",   price: 3.2, seller: "4aKw...jQ7r", tags: ["nlp","fine-tune"], preview: "500 k instruction pairs for LLM fine-tuning, Apache-2 license.", metadata: { file: "synthetic_qa_corpus.jsonl", size: "860 MiB", type: "JSONL", checksum: "sha256:b19e…42de", chunks: 54, encrypted: "AES-256-GCM" } },
+      { id: 3, title: "Solana Whale Alert Feed Q1",     category: "signals",     price: 0.8, seller: "2rTp...bL9s", tags: ["on-chain","whale"], preview: "All >$500 k SOL transfers with wallet labels, Jan – Mar 2026.", metadata: { file: "sol_whale_feed_q1.csv", size: "318 MiB", type: "CSV", checksum: "sha256:03aa…e77c", chunks: 20, encrypted: "AES-256-GCM" } },
+      { id: 4, title: "DeFi Alpha Report — April 2026", category: "research",    price: 2.0, seller: "9nWm...cF4k", tags: ["defi","alpha"], preview: "37-page proprietary analysis covering top-10 protocols.", metadata: { file: "defi_alpha_apr_2026.pdf", size: "74 MiB", type: "PDF", checksum: "sha256:aa81…19f0", chunks: 5, encrypted: "AES-256-GCM" } },
+      { id: 5, title: "Birdeye API Pro Key (30 days)",  category: "api-access",  price: 0.5, seller: "6vHq...dE2x", tags: ["api","birdeye"], preview: "Resold premium key — 30-day access, 1 M calls / day.", metadata: { file: "birdeye_access_manifest.json", size: "12 KiB", type: "Manifest", checksum: "sha256:bc90…41a2", chunks: 1, encrypted: "sealed-key" } },
+      { id: 6, title: "NFT Floor-Price Time Series",    category: "market-data", price: 1.1, seller: "3mJs...hA8t", tags: ["nft","floor"], preview: "15 collections tracked hourly for 90 days.", metadata: { file: "nft_floor_timeseries.avro", size: "526 MiB", type: "Avro", checksum: "sha256:f3d2…b72e", chunks: 33, encrypted: "AES-256-GCM" } },
     ];
 
     const SAMPLE_AUCTIONS = [
@@ -233,6 +243,20 @@
           <p class="text-white/40 text-xs mb-4 leading-relaxed">${item.preview}</p>
           <div class="flex gap-1 mb-4 flex-wrap">
             ${item.tags.map(t => `<span class="pill bg-white/5 border border-white/10 text-white/40">#${t}</span>`).join("")}
+          </div>
+          <div class="rounded-xl bg-white/[0.03] border border-white/10 p-3 mb-4">
+            <div class="flex items-center justify-between gap-3 mb-2">
+              <span class="text-xs text-white/35">File Metadata</span>
+              <span class="pill bg-[#14F195]/10 text-[#14F195] border border-[#14F195]/20">${item.metadata.size}</span>
+            </div>
+            <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-[11px] text-white/45">
+              <span class="truncate mono">${item.metadata.file}</span>
+              <span class="text-right">${item.metadata.type}</span>
+              <span class="mono">${item.metadata.checksum}</span>
+              <span class="text-right">${item.metadata.chunks} chunks</span>
+              <span>${item.metadata.encrypted}</span>
+              <span class="text-right">manifest v1</span>
+            </div>
           </div>
           <div class="flex items-center justify-between">
             <div>
