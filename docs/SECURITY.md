@@ -48,6 +48,7 @@
 | Reinit / duplicate PDA | Anchor's `init` constraint rejects if account already exists |
 | Lamport drain from escrow | Escrow PDA writes gated by auction state + `escrow_bump` |
 | Malicious upload payloads | SDK upload guard performs client-side preflight for blocked extensions, executable magic bytes, suspicious script markers, and SHA-256 fingerprinting before encrypted storage |
+| AI asset generation | Xona integration receives structured metadata context only for image and description generation; plaintext payloads and decryption keys remain outside the AI workflow |
 
 ## Upload preflight guard
 
@@ -65,6 +66,14 @@ marketplace listings auditable without placing raw payload contents on-chain.
 
 This is a defense-in-depth preflight and should be paired with provider-side
 malware scanning in production upload infrastructure.
+
+## Xona AI integration
+
+OBSCRA integrates with [Xona](https://xona-agent.com/) as an AI generation layer
+for marketplace images, image prompts, and buyer-facing descriptions. The
+integration is scoped to structured listing metadata, upload manifests,
+checksums, categories, and tag context. Plaintext files, decrypted payload bytes,
+and buyer-specific decryption keys are not sent to the agent layer.
 
 ## Deliberate non-goals (v1)
 

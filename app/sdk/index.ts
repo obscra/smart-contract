@@ -12,6 +12,15 @@ export {
   type FileGuardResult,
   type GuardSeverity,
 } from "./fileGuard";
+export {
+  XONA_AGENT,
+  buildXonaPrompt,
+  createXonaGeneratedAsset,
+  type XonaAgentConfig,
+  type XonaGeneratedAsset,
+  type XonaGenerationRequest,
+  type XonaDatasetContext,
+} from "./xonaAgent";
 
 export const SEED = {
   MARKETPLACE: Buffer.from("obs_protocol"),

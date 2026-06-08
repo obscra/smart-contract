@@ -76,6 +76,7 @@ This repo contains the **Solana smart contract** (`data_market`) handling all on
 | Subscription access | **Pass** | Per-day pricing, stackable renewals, seller-controlled plans |
 | Private delivery | **Direct Transfer** | Whitelisted single-buyer sales with on-chain proof |
 | Reputation | **Trust Score** | 1-5 star post-sale ratings aggregated per seller profile |
+| AI generation | **Xona Agent** | Integrates with [Xona](https://xona-agent.com/) for AI-generated listing images, image prompts, and marketplace descriptions |
 | Disputes | **Claim** | 7-day buyer window, arbitrator-resolved with on-chain outcome |
 
 ---
@@ -87,6 +88,7 @@ This repo contains the **Solana smart contract** (`data_market`) handling all on
 │                 OBSCRA DApp (Next.js)                 │
 │                                                       │
 │  /market   /auction   /cloud   /direct-transfer       │
+│  /xona-ai  image + description generation              │
 │       ↑            ↑                                  │
 │  Supabase     Wallet Adapter (Phantom / Solflare /    │
 │  (off-chain    Backpack) + @solana/wallet-adapter     │
@@ -112,6 +114,10 @@ This repo contains the **Solana smart contract** (`data_market`) handling all on
        Solana RPC     IPFS        Helius
     (settlement)  (ciphertext)  (webhooks
                   via Pinata)   → indexer)
+                        │
+                        ▼
+                  Xona Agent
+        (image + description generation)
 ```
 
 ### How data stays private

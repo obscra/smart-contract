@@ -44,6 +44,7 @@
       <a href="#auctions"      class="hover:text-white transition">Auctions</a>
       <a href="#subscriptions" class="hover:text-white transition">Subscriptions</a>
       <a href="#profile"       class="hover:text-white transition">Profile</a>
+      <a href="#xona"          class="hover:text-white transition">Xona AI</a>
     </div>
 
     <button id="walletBtn"
@@ -55,7 +56,7 @@
   <!-- ── HERO ───────────────────────────────────────────────────────── -->
   <section class="px-6 py-20 text-center max-w-4xl mx-auto">
     <div class="inline-block pill bg-[#14F195]/10 text-[#14F195] border border-[#14F195]/20 mb-6 text-xs tracking-widest uppercase">
-      Non-custodial · On-chain settlement · Solana · 2 GiB uploads
+      Non-custodial · On-chain settlement · Solana · 2 GiB uploads · Xona AI
     </div>
     <h1 class="text-5xl md:text-6xl font-bold leading-tight mb-6">
       Trade, Auction &amp; Stream<br/>
@@ -64,7 +65,7 @@
     <p class="text-white/50 text-lg max-w-xl mx-auto mb-10">
       OBSCRA is the first fully on-chain data marketplace featuring English, Dutch, and
       sealed-bid auctions, subscription access, and arbitrated dispute resolution — all
-      settled natively on Solana with a 2 GiB encrypted upload envelope.
+      settled natively on Solana with a 2 GiB encrypted upload envelope and Xona AI-generated images and descriptions.
     </p>
     <div class="flex gap-4 justify-center flex-wrap">
       <button class="px-6 py-3 rounded-xl bg-gradient-to-r from-[#9945FF] to-[#14F195] font-semibold hover:opacity-90 transition glow">
@@ -118,6 +119,38 @@
     <div id="tab-dutch"         class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
     <div id="tab-sealed"        class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
     <div id="tab-subscriptions" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+  </section>
+
+  <!-- ── XONA AI ────────────────────────────────────────────────────── -->
+  <section class="px-6 max-w-6xl mx-auto mt-10" id="xona">
+    <div class="panel rounded-2xl p-6 glow-accent">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+        <div>
+          <div class="inline-flex items-center gap-2 pill bg-[#14F195]/10 text-[#14F195] border border-[#14F195]/20 uppercase tracking-widest mb-3">Xona Agent Integration</div>
+          <h2 class="text-2xl font-bold mb-2">AI image and description generation</h2>
+          <p class="text-white/45 text-sm max-w-2xl leading-relaxed">
+            OBSCRA connects listing metadata to Xona at <span class="mono text-white/70">https://xona-agent.com/</span>
+            for marketplace image prompts, generated descriptions, visual style routing, and buyer-facing listing copy.
+          </p>
+        </div>
+        <div class="grid grid-cols-2 gap-3 text-center min-w-[280px]">
+          <div class="rounded-xl bg-white/[0.03] border border-white/10 p-3">
+            <div class="text-xl font-bold gradient-text">91%</div>
+            <div class="text-xs text-white/35">agent confidence</div>
+          </div>
+          <div class="rounded-xl bg-white/[0.03] border border-white/10 p-3">
+            <div class="text-xl font-bold gradient-text">v1</div>
+            <div class="text-xs text-white/35">manifest model</div>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mt-6 text-xs">
+        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-3"><span class="text-[#14F195]">●</span> Image prompt generation</div>
+        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-3"><span class="text-[#14F195]">●</span> Listing descriptions</div>
+        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-3"><span class="text-[#14F195]">●</span> Visual style routing</div>
+        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-3"><span class="text-[#14F195]">●</span> Metadata-aware copy</div>
+      </div>
+    </div>
   </section>
 
   <!-- ── LIST MODAL ─────────────────────────────────────────────────── -->
@@ -182,12 +215,12 @@
   <script>
     // ── sample data ───────────────────────────────────────────────────
     const SAMPLE_LISTINGS = [
-      { id: 1, title: "ETH/USD 1-min OHLCV 2024",      category: "market-data", price: 1.5, seller: "8xYz...mN3p", tags: ["crypto","ohlcv"],  preview: "12-month tick-by-tick candles for ETH/USD, CSV + Parquet format.", metadata: { file: "eth_usd_ohlcv_2024.parquet", size: "1.42 GiB", type: "Parquet", checksum: "sha256:7c4f…91ab", chunks: 91, encrypted: "AES-256-GCM" } },
-      { id: 2, title: "GPT-4 Synthetic Q&A Dataset",    category: "ml-models",   price: 3.2, seller: "4aKw...jQ7r", tags: ["nlp","fine-tune"], preview: "500 k instruction pairs for LLM fine-tuning, Apache-2 license.", metadata: { file: "synthetic_qa_corpus.jsonl", size: "860 MiB", type: "JSONL", checksum: "sha256:b19e…42de", chunks: 54, encrypted: "AES-256-GCM" } },
-      { id: 3, title: "Solana Whale Alert Feed Q1",     category: "signals",     price: 0.8, seller: "2rTp...bL9s", tags: ["on-chain","whale"], preview: "All >$500 k SOL transfers with wallet labels, Jan – Mar 2026.", metadata: { file: "sol_whale_feed_q1.csv", size: "318 MiB", type: "CSV", checksum: "sha256:03aa…e77c", chunks: 20, encrypted: "AES-256-GCM" } },
-      { id: 4, title: "DeFi Alpha Report — April 2026", category: "research",    price: 2.0, seller: "9nWm...cF4k", tags: ["defi","alpha"], preview: "37-page proprietary analysis covering top-10 protocols.", metadata: { file: "defi_alpha_apr_2026.pdf", size: "74 MiB", type: "PDF", checksum: "sha256:aa81…19f0", chunks: 5, encrypted: "AES-256-GCM" } },
-      { id: 5, title: "Birdeye API Pro Key (30 days)",  category: "api-access",  price: 0.5, seller: "6vHq...dE2x", tags: ["api","birdeye"], preview: "Resold premium key — 30-day access, 1 M calls / day.", metadata: { file: "birdeye_access_manifest.json", size: "12 KiB", type: "Manifest", checksum: "sha256:bc90…41a2", chunks: 1, encrypted: "sealed-key" } },
-      { id: 6, title: "NFT Floor-Price Time Series",    category: "market-data", price: 1.1, seller: "3mJs...hA8t", tags: ["nft","floor"], preview: "15 collections tracked hourly for 90 days.", metadata: { file: "nft_floor_timeseries.avro", size: "526 MiB", type: "Avro", checksum: "sha256:f3d2…b72e", chunks: 33, encrypted: "AES-256-GCM" } },
+      { id: 1, title: "ETH/USD 1-min OHLCV 2024",      category: "market-data", price: 1.5, seller: "8xYz...mN3p", tags: ["crypto","ohlcv"],  preview: "12-month tick-by-tick candles for ETH/USD, CSV + Parquet format.", metadata: { file: "eth_usd_ohlcv_2024.parquet", size: "1.42 GiB", type: "Parquet", checksum: "sha256:7c4f…91ab", chunks: 91, encrypted: "AES-256-GCM" }, ai: { confidence: "0.94", summary: "Generated premium market-data description and neon candlestick image prompt." } },
+      { id: 2, title: "GPT-4 Synthetic Q&A Dataset",    category: "ml-models",   price: 3.2, seller: "4aKw...jQ7r", tags: ["nlp","fine-tune"], preview: "500 k instruction pairs for LLM fine-tuning, Apache-2 license.", metadata: { file: "synthetic_qa_corpus.jsonl", size: "860 MiB", type: "JSONL", checksum: "sha256:b19e…42de", chunks: 54, encrypted: "AES-256-GCM" }, ai: { confidence: "0.91", summary: "Generated ML-focused listing copy and abstract neural dataset visual prompt." } },
+      { id: 3, title: "Solana Whale Alert Feed Q1",     category: "signals",     price: 0.8, seller: "2rTp...bL9s", tags: ["on-chain","whale"], preview: "All >$500 k SOL transfers with wallet labels, Jan – Mar 2026.", metadata: { file: "sol_whale_feed_q1.csv", size: "318 MiB", type: "CSV", checksum: "sha256:03aa…e77c", chunks: 20, encrypted: "AES-256-GCM" }, ai: { confidence: "0.88", summary: "Generated whale-signal description and oceanic on-chain flow image prompt." } },
+      { id: 4, title: "DeFi Alpha Report — April 2026", category: "research",    price: 2.0, seller: "9nWm...cF4k", tags: ["defi","alpha"], preview: "37-page proprietary analysis covering top-10 protocols.", metadata: { file: "defi_alpha_apr_2026.pdf", size: "74 MiB", type: "PDF", checksum: "sha256:aa81…19f0", chunks: 5, encrypted: "AES-256-GCM" }, ai: { confidence: "0.86", summary: "Generated institutional research copy and DeFi dashboard image prompt." } },
+      { id: 5, title: "Birdeye API Pro Key (30 days)",  category: "api-access",  price: 0.5, seller: "6vHq...dE2x", tags: ["api","birdeye"], preview: "Resold premium key — 30-day access, 1 M calls / day.", metadata: { file: "birdeye_access_manifest.json", size: "12 KiB", type: "Manifest", checksum: "sha256:bc90…41a2", chunks: 1, encrypted: "sealed-key" }, ai: { confidence: "0.79", summary: "Generated API-access listing copy and secure key handoff visual prompt." } },
+      { id: 6, title: "NFT Floor-Price Time Series",    category: "market-data", price: 1.1, seller: "3mJs...hA8t", tags: ["nft","floor"], preview: "15 collections tracked hourly for 90 days.", metadata: { file: "nft_floor_timeseries.avro", size: "526 MiB", type: "Avro", checksum: "sha256:f3d2…b72e", chunks: 33, encrypted: "AES-256-GCM" }, ai: { confidence: "0.90", summary: "Generated NFT analytics description and collection floor-chart image prompt." } },
     ];
 
     const SAMPLE_AUCTIONS = [
@@ -244,7 +277,7 @@
           <div class="flex gap-1 mb-4 flex-wrap">
             ${item.tags.map(t => `<span class="pill bg-white/5 border border-white/10 text-white/40">#${t}</span>`).join("")}
           </div>
-          <div class="rounded-xl bg-white/[0.03] border border-white/10 p-3 mb-4">
+          <div class="rounded-xl bg-white/[0.03] border border-white/10 p-3 mb-3">
             <div class="flex items-center justify-between gap-3 mb-2">
               <span class="text-xs text-white/35">File Metadata</span>
               <span class="pill bg-[#14F195]/10 text-[#14F195] border border-[#14F195]/20">${item.metadata.size}</span>
@@ -257,6 +290,13 @@
               <span>${item.metadata.encrypted}</span>
               <span class="text-right">manifest v1</span>
             </div>
+          </div>
+          <div class="rounded-xl bg-[#9945FF]/5 border border-[#9945FF]/20 p-3 mb-4">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs text-[#9945FF]">Xona Generated Assets</span>
+              <span class="text-[10px] text-white/35 mono">confidence ${item.ai.confidence}</span>
+            </div>
+            <div class="text-xs text-white/45 leading-relaxed">${item.ai.summary}</div>
           </div>
           <div class="flex items-center justify-between">
             <div>
