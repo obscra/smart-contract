@@ -8,7 +8,7 @@
  * In production, swap MemoryStore for a Postgres/Prisma adapter.
  *
  * Usage:
- *   ANCHOR_PROVIDER_URL=wss://api.devnet.solana.com \
+ *   ANCHOR_PROVIDER_URL=https://staging.oobeprotocol.ai:8080/rpc \
  *   ts-node indexer/index.ts
  */
 
@@ -94,7 +94,7 @@ class MemoryStore {
 /* ---------- main ---------- */
 
 async function main(): Promise<void> {
-  const rpcUrl = process.env.ANCHOR_PROVIDER_URL ?? "https://api.devnet.solana.com";
+  const rpcUrl = process.env.ANCHOR_PROVIDER_URL ?? "https://staging.oobeprotocol.ai:8080/rpc";
   const wsUrl = rpcUrl.replace(/^https/, "wss").replace(/^http/, "ws");
   const idlPath = path.resolve(__dirname, "../target/idl/data_market.json");
 

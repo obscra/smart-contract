@@ -14,7 +14,7 @@ data_market = "e2GDjgt6R2DW2CeYDbo1ohLAxL66rcojYyNZqcrah3EH"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "https://staging.oobeprotocol.ai:8080/rpc"
 wallet  = "~/.config/solana/id.json"
 
 [scripts]

@@ -21,6 +21,11 @@ export {
   type XonaGenerationRequest,
   type XonaDatasetContext,
 } from "./xonaAgent";
+export {
+  OBSCRA_RPC_ENDPOINT,
+  OBSCRA_RPC_LABEL,
+  resolveObscraRpcEndpoint,
+} from "./rpc";
 
 export const SEED = {
   MARKETPLACE: Buffer.from("obs_protocol"),

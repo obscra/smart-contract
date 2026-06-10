@@ -1,8 +1,9 @@
 .PHONY: all build test lint fmt clean deploy-devnet seed airdrop keys size
 
 # ─── config ──────────────────────────────────────────────────────────────────
-CLUSTER      ?= localnet
-SOL_CLUSTER  := $(if $(filter mainnet,$(CLUSTER)),mainnet-beta,$(CLUSTER))
+CLUSTER      ?= oobe-staging
+RPC_URL      ?= https://staging.oobeprotocol.ai:8080/rpc
+SOL_CLUSTER  := $(if $(filter oobe-staging,$(CLUSTER)),$(RPC_URL),$(if $(filter mainnet,$(CLUSTER)),mainnet-beta,$(CLUSTER)))
 WALLET       ?= ~/.config/solana/id.json
 PROGRAM_NAME := data_market
 
@@ -48,13 +49,13 @@ keys:
 
 deploy-devnet:
 	anchor build
-	anchor deploy --provider.cluster devnet --provider.wallet $(WALLET)
+	anchor deploy --provider.cluster $(RPC_URL) --provider.wallet $(WALLET)
 	$(MAKE) init-devnet
 
 init-devnet:
-	ANCHOR_PROVIDER_URL=https://api.devnet.solana.com \
+	ANCHOR_PROVIDER_URL=$(RPC_URL) \
 	ANCHOR_WALLET=$(WALLET) \
-	ts-node scripts/deploy.ts --cluster devnet
+	ts-node scripts/deploy.ts --cluster oobe-staging
 
 deploy-mainnet:
 	@echo "[obscra] mainnet deploy — ctrl+c to abort"

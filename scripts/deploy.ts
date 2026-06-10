@@ -26,7 +26,9 @@ import { ObscraClient } from "../app/sdk";
 
 /* ---------- types ---------- */
 
-type ObscraCluster = "localnet" | "devnet" | "mainnet-beta";
+const OOBE_STAGING_RPC = "https://staging.oobeprotocol.ai:8080/rpc";
+
+type ObscraCluster = "localnet" | "devnet" | "mainnet-beta" | "oobe-staging";
 
 /* ---------- CLI helpers ---------- */
 
@@ -59,8 +61,10 @@ async function main(): Promise<void> {
   );
   const feeBps = parseInt(readArg("--fee-bps", "250"), 10);
 
-  console.log(`[obscra] deploying program to ${cluster}`);
-  execSync(`anchor deploy --provider.cluster ${cluster}`, { stdio: "inherit" });
+  const providerCluster = cluster === "oobe-staging" ? OOBE_STAGING_RPC : cluster;
+
+  console.log(`[obscra] deploying program to ${providerCluster}`);
+  execSync(`anchor deploy --provider.cluster ${providerCluster}`, { stdio: "inherit" });
 
   /* Wire up Anchor provider + program */
   const provider = anchor.AnchorProvider.env();

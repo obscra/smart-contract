@@ -6,7 +6,7 @@
  * Use this when bootstrapping a fresh indexer against an existing deployment.
  *
  * Usage:
- *   ANCHOR_PROVIDER_URL=https://api.devnet.solana.com \
+ *   ANCHOR_PROVIDER_URL=https://staging.oobeprotocol.ai:8080/rpc \
  *   ts-node indexer/backfill.ts [--before <sig>] [--limit 1000]
  */
 
@@ -36,7 +36,7 @@ function readFlag(flag: string, fallback?: string): string | undefined {
 /* ---------- main ---------- */
 
 async function main(): Promise<void> {
-  const rpcUrl = process.env.ANCHOR_PROVIDER_URL ?? "https://api.devnet.solana.com";
+  const rpcUrl = process.env.ANCHOR_PROVIDER_URL ?? "https://staging.oobeprotocol.ai:8080/rpc";
   const idlPath = path.resolve(__dirname, "../target/idl/data_market.json");
 
   if (!fs.existsSync(idlPath)) {

@@ -111,7 +111,7 @@ This repo contains the **Solana smart contract** (`data_market`) handling all on
                         │
            ┌────────────┼────────────┐
            ▼            ▼            ▼
-       Solana RPC     IPFS        Helius
+   OOBE Staging RPC   IPFS        Helius
     (settlement)  (ciphertext)  (webhooks
                   via Pinata)   → indexer)
                         │
@@ -288,7 +288,7 @@ yarn install
 make build
 make test
 
-# Deploy to devnet
+# Deploy to OOBE staging RPC
 make deploy-devnet
 
 # Populate sample data
@@ -307,7 +307,7 @@ make keys
 ```bash
 cp .env.example .env
 # Edit:
-#   ANCHOR_PROVIDER_URL — devnet or mainnet-beta RPC
+#   ANCHOR_PROVIDER_URL — defaults to https://staging.oobeprotocol.ai:8080/rpc for staging
 #   ANCHOR_WALLET       — path to your keypair
 #   TREASURY_KEYPAIR    — fee collection wallet
 #   ARBITRATOR_KEYPAIR  — dispute resolution wallet
