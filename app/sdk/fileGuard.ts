@@ -1,3 +1,12 @@
+/**
+ * OBSCRA File Guard — client-side upload preflight and security scanner.
+ * Performs MIME validation, size enforcement, executable signature detection,
+ * entropy analysis, and structured metadata extraction before encrypted upload.
+ *
+ * @packageDocumentation
+ */
+
+/** Severity level of a file guard finding. */
 export type GuardSeverity = "low" | "medium" | "high";
 
 export interface FileGuardFinding {
@@ -6,10 +15,15 @@ export interface FileGuardFinding {
   message: string;
 }
 
+/** Configuration options for the upload guard preflight pass. */
 export interface FileGuardOptions {
+  /** Maximum file size in bytes. Defaults to 2 GiB. */
   maxBytes?: number;
+  /** Allowlist of permitted MIME types. */
   allowedMimeTypes?: string[];
+  /** Blocklist of file extensions that are always rejected. */
   blockedExtensions?: string[];
+  /** Whether to scan for suspicious text payloads. Defaults to true. */
   scanTextPayloads?: boolean;
 }
 

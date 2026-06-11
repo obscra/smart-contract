@@ -170,7 +170,7 @@ describe("OBSCRA reputation & dispute", () => {
           .accounts({
             protocol,
             dispute,
-            buyerProfile: null,
+            buyerProfile: null as any,
             arbitrator: intruder.publicKey,
           })
           .signers([intruder])
@@ -196,7 +196,7 @@ describe("OBSCRA reputation & dispute", () => {
       .accounts({
         protocol,
         dispute,
-        buyerProfile: null,
+        buyerProfile: null as any,
         arbitrator: arbitrator.publicKey,
       })
       .signers([arbitrator])

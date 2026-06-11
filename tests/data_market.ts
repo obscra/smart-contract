@@ -107,8 +107,8 @@ describe("OBSCRA data_market", () => {
           buyer: bob.publicKey,
           seller: alice.publicKey,
           treasury: treasury.publicKey,
-          sellerProfile: null,
-          buyerProfile: null,
+          sellerProfile: null as any,
+          buyerProfile: null as any,
           systemProgram: SystemProgram.programId,
         })
         .signers([bob])
@@ -166,7 +166,7 @@ describe("OBSCRA data_market", () => {
           auction,
           escrow,
           bidder: bob.publicKey,
-          previousBidder: null,
+          previousBidder: null as any,
           systemProgram: SystemProgram.programId,
         })
         .signers([bob])

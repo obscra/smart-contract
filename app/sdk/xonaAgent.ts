@@ -1,7 +1,21 @@
+/**
+ * OBSCRA Xona Agent Integration — AI image and description generation.
+ * Sends structured listing metadata to the Xona agent endpoint to produce
+ * marketplace image prompts, generated descriptions, and copy-optimized content.
+ *
+ * @packageDocumentation
+ * @see {@link https://xona-agent.com}
+ */
+
+/** Configuration for the Xona agent connection. */
 export interface XonaAgentConfig {
+  /** Agent HTTP endpoint. */
   endpoint: string;
+  /** Agent model manifest version. */
   version: string;
+  /** Enumerated agent capabilities. */
   capabilities: string[];
+  /** Request timeout in milliseconds. */
   requestTimeoutMs: number;
 }
 

@@ -1,8 +1,22 @@
-// OBSCRA SDK — typed helpers for the OBSCRA Data Marketplace program.
+/**
+ * OBSCRA SDK — typed helpers for the OBSCRA Data Marketplace program.
+ * Provides high-level wrappers around the on-chain data_market program,
+ * cryptographic utilities, file guard preflight, and AI generation helpers.
+ *
+ * @packageDocumentation
+ * @see {@link https://obscra.app}
+ */
 
 import * as anchor from "@coral-xyz/anchor";
 import { PublicKey, SystemProgram, Keypair } from "@solana/web3.js";
 import { keccak_256 } from "js-sha3";
+
+/** SDK version, aligned with package.json. */
+export const SDK_VERSION = "0.2.0";
+
+/** Solana cluster identifiers supported by this SDK. */
+export type ObscraCluster = "localnet" | "oobe-staging" | "devnet" | "mainnet-beta";
+
 export {
   guardUploadedFile,
   type FileGuardFinding,
@@ -251,4 +265,56 @@ export enum SealedStatus {
   Reveal = 1,
   Settled = 2,
   Cancelled = 3,
+}
+
+/* ── Validation helpers ─────────────────────────────────────────────────── */
+
+/**
+ * Validates that a title string conforms to OBSCRA listing requirements.
+ * @param title - The listing title to validate.
+ * @returns `true` if valid; throws with a descriptive message otherwise.
+ */
+export function validateTitle(title: string): boolean {
+  if (!title || title.trim().length === 0) {
+    throw new Error("[obscra] title must not be empty");
+  }
+  if (title.trim().length > 80) {
+    throw new Error("[obscra] title exceeds maximum length of 80 characters");
+  }
+  return true;
+}
+
+/**
+ * Validates that a price (in lamports) is within acceptable bounds.
+ * @param lamports - The price in lamports.
+ * @throws If price is zero or exceeds u64::MAX.
+ */
+export function validatePrice(lamports: bigint | number): boolean {
+  if (lamports <= 0) {
+    throw new Error("[obscra] price must be greater than zero lamports");
+  }
+  const MAX_U64 = BigInt("0xffffffffffffffff");
+  if (BigInt(lamports) > MAX_U64) {
+    throw new Error("[obscra] price exceeds u64::MAX");
+  }
+  return true;
+}
+
+/**
+ * Resolves a cluster alias to a full RPC URL.
+ * @param cluster - The cluster identifier.
+ * @returns The full RPC endpoint URL.
+ */
+export function resolveClusterUrl(cluster: ObscraCluster): string {
+  switch (cluster) {
+    case "oobe-staging":
+      return "https://staging.oobeprotocol.ai:8080/rpc";
+    case "devnet":
+      return "https://api.devnet.solana.com";
+    case "mainnet-beta":
+      return "https://api.mainnet-beta.solana.com";
+    case "localnet":
+    default:
+      return "http://localhost:8899";
+  }
 }
