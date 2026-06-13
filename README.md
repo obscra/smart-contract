@@ -77,6 +77,7 @@ This repo contains the **Solana smart contract** (`data_market`) handling all on
 | Private delivery | **Direct Transfer** | Whitelisted single-buyer sales with on-chain proof |
 | Reputation | **Trust Score** | 1-5 star post-sale ratings aggregated per seller profile |
 | AI generation | **Xona Agent** | Integrates with [Xona](https://xona-agent.com/) for AI-generated listing images, image prompts, and marketplace descriptions |
+| Preview protection | **Blur Preview** | Configurable blur filters on encrypted data thumbnails based on content class, buyer trust tier, and access level |
 | Disputes | **Claim** | 7-day buyer window, arbitrator-resolved with on-chain outcome |
 
 ---

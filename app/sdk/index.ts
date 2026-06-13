@@ -36,6 +36,15 @@ export {
   type XonaDatasetContext,
 } from "./xonaAgent";
 export {
+  computeBlurPreview,
+  blurPreviewStyle,
+  defaultBlurForClass,
+  canUnlockBlur,
+  type BlurIntensity,
+  type BlurPreviewOptions,
+  type BlurPreviewResult,
+} from "./blurPreview";
+export {
   OBSCRA_RPC_ENDPOINT,
   OBSCRA_RPC_LABEL,
   resolveObscraRpcEndpoint,

@@ -27,6 +27,24 @@
     }
     .pill { font-size: 10px; padding: 2px 8px; border-radius: 999px; }
     .tabular { font-variant-numeric: tabular-nums; }
+    .blur-preview {
+      position: relative;
+      overflow: hidden;
+      border-radius: 0.75rem;
+    }
+    .blur-preview::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: inherit;
+      filter: blur(24px) brightness(0.6);
+      pointer-events: none;
+    }
+    .blur-overlay {
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(2px);
+    }
   </style>
 </head>
 <body class="bg-[#0a0a0f] text-white min-h-screen">
@@ -149,6 +167,38 @@
         <div class="rounded-xl border border-white/10 bg-white/[0.03] p-3"><span class="text-[#14F195]">●</span> Listing descriptions</div>
         <div class="rounded-xl border border-white/10 bg-white/[0.03] p-3"><span class="text-[#14F195]">●</span> Visual style routing</div>
         <div class="rounded-xl border border-white/10 bg-white/[0.03] p-3"><span class="text-[#14F195]">●</span> Metadata-aware copy</div>
+      </div>
+      <!-- Blur Preview Section -->
+      <div class="mt-6 border-t border-white/10 pt-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-semibold text-white/70">Preview Image Blur</h3>
+          <span class="pill bg-[#9945FF]/20 text-[#9945FF] border border-[#9945FF]/30">beta</span>
+        </div>
+        <div class="grid grid-cols-3 gap-3">
+          <div class="blur-preview rounded-xl overflow-hidden aspect-[4/3] bg-gradient-to-br from-[#9945FF]/40 to-[#14F195]/40 flex items-center justify-center">
+            <div class="blur-overlay text-center px-3 py-2">
+              <div class="text-xs text-white/50 mb-1">Low Blur</div>
+              <div class="text-[10px] text-white/30 mono">filter: 12px</div>
+            </div>
+          </div>
+          <div class="blur-preview rounded-xl overflow-hidden aspect-[4/3] bg-gradient-to-br from-[#14F195]/30 to-[#9945FF]/30 flex items-center justify-center" style="filter: blur(32px) brightness(0.5);">
+            <div class="blur-overlay text-center px-3 py-2">
+              <div class="text-xs text-white/50 mb-1">Medium Blur</div>
+              <div class="text-[10px] text-white/30 mono">filter: 32px</div>
+            </div>
+          </div>
+          <div class="blur-preview rounded-xl overflow-hidden aspect-[4/3] bg-gradient-to-br from-[#9945FF]/50 to-[#14F195]/50 flex items-center justify-center" style="filter: blur(48px) brightness(0.4);">
+            <div class="blur-overlay text-center px-3 py-2">
+              <div class="text-xs text-white/50 mb-1">Heavy Blur</div>
+              <div class="text-[10px] text-white/30 mono">filter: 48px</div>
+            </div>
+          </div>
+        </div>
+        <p class="text-[11px] text-white/35 mt-3 leading-relaxed">
+          Encrypted data previews are blurred by default to protect sensitive content.
+          Blur intensity is configurable via SDK and adjusts automatically based on
+          metadata classification and buyer trust tier.
+        </p>
       </div>
     </div>
   </section>
