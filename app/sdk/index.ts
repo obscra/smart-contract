@@ -45,6 +45,20 @@ export {
   type BlurPreviewResult,
 } from "./blurPreview";
 export {
+  computeSellerSummary,
+  formatStarDisplay,
+  ratingToSentiment,
+  validateReview,
+  isReviewEligible,
+  ratingLabel,
+  type StarRating,
+  type ReviewSentiment,
+  type SellerReviewSummary,
+  type ReviewEntry,
+  type SubmitReviewPayload,
+  type ReviewValidationResult,
+} from "./review";
+export {
   OBSCRA_RPC_ENDPOINT,
   OBSCRA_RPC_LABEL,
   resolveObscraRpcEndpoint,

@@ -63,6 +63,7 @@
       <a href="#subscriptions" class="hover:text-white transition">Subscriptions</a>
       <a href="#profile"       class="hover:text-white transition">Profile</a>
       <a href="#xona"          class="hover:text-white transition">Xona AI</a>
+      <a href="#reviews"       class="hover:text-white transition">Reviews</a>
     </div>
 
     <button id="walletBtn"
@@ -203,6 +204,60 @@
     </div>
   </section>
 
+  <!-- ── REVIEWS ─────────────────────────────────────────────────── -->
+  <section class="px-6 max-w-6xl mx-auto mt-10" id="reviews">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-bold">Buyer Reviews</h2>
+      <button onclick="openReviewModal()"
+        class="px-4 py-2 rounded-lg bg-gradient-to-r from-[#9945FF] to-[#14F195] text-xs font-semibold hover:opacity-90 transition">
+        Write a Review
+      </button>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="reviewFeed"></div>
+  </section>
+
+  <!-- ── REVIEW MODAL ─────────────────────────────────────────────── -->
+  <div id="reviewModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+    <div class="panel rounded-2xl p-8 w-full max-w-md glow">
+      <h2 class="text-xl font-semibold mb-4">Write a Review</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs text-white/50 mb-2">Select Purchase</label>
+          <select id="reviewListing" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#9945FF]">
+            <option value="1">ETH/USD 1-min OHLCV 2024 — 8xYz...mN3p</option>
+            <option value="2">GPT-4 Synthetic Q&A Dataset — 4aKw...jQ7r</option>
+            <option value="3">Solana Whale Alert Feed Q1 — 2rTp...bL9s</option>
+            <option value="4">DeFi Alpha Report — April 2026 — 9nWm...cF4k</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs text-white/50 mb-2">Rating</label>
+          <div class="flex gap-2" id="starPicker">
+            ${[1,2,3,4,5].map(n => `<button onclick="setRating(${n})" id="starBtn${n}" class="text-2xl text-white/20 hover:text-[#14F195] transition">★</button>`).join("")}
+          </div>
+          <div class="text-[11px] text-white/35 mt-1" id="ratingLabel">Select a rating</div>
+        </div>
+        <div>
+          <label class="block text-xs text-white/50 mb-2">Comment <span class="text-white/20">(max 280 chars)</span></label>
+          <textarea id="reviewComment" rows="4" maxlength="280" placeholder="Share your experience with this data asset..."
+            class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#9945FF] resize-none"></textarea>
+          <div class="text-[10px] text-white/25 text-right mt-1"><span id="charCount">0</span>/280</div>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-[11px] text-white/35">
+          Reviews are anchored on-chain via the OBSCRA review program. Trust scores update automatically after submission.
+        </div>
+      </div>
+      <div class="flex gap-3 mt-6">
+        <button onclick="closeReviewModal()"
+          class="flex-1 py-3 rounded-lg panel text-sm font-medium hover:bg-white/5">Cancel</button>
+        <button onclick="submitReview()"
+          class="flex-1 py-3 rounded-lg bg-gradient-to-r from-[#9945FF] to-[#14F195] text-sm font-semibold hover:opacity-90">
+          Submit Review
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ── LIST MODAL ─────────────────────────────────────────────────── -->
   <div id="listModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
     <div class="panel rounded-2xl p-8 w-full max-w-lg glow">
@@ -290,6 +345,26 @@
       { id: 3, title: "On-chain Data Stream Pro",  category: "market-data", perDay: 0.08, subscribers: 213 },
     ];
 
+    const SAMPLE_REVIEWS = [
+      { id: 1, listingId: 1, reviewer: "3mJs...hA8t", rating: 5, comment: "Excellent dataset — complete and well-structured. Exactly what I needed for backtesting.", date: "2026-06-08", sentiment: "very_positive" },
+      { id: 2, listingId: 1, reviewer: "5kRn...vY0w", rating: 4, comment: "Good quality OHLCV data, minor gaps in Q2 but overall solid coverage.", date: "2026-06-05", sentiment: "positive" },
+      { id: 3, listingId: 2, reviewer: "7bLe...qM6z", rating: 5, comment: "Premium quality instruction pairs. Fine-tuned a model with this and got great results.", date: "2026-06-07", sentiment: "very_positive" },
+      { id: 4, listingId: 2, reviewer: "1fGh...pX5u", rating: 4, comment: "Clean format, easy to ingest. Only扣一分 for missing a few edge cases.", date: "2026-06-03", sentiment: "positive" },
+      { id: 5, listingId: 3, reviewer: "9nWm...cF4k", rating: 3, comment: "Decent whale signals but wallet labels felt outdated after March.", date: "2026-06-01", sentiment: "neutral" },
+      { id: 6, listingId: 4, reviewer: "2rTp...bL9s", rating: 5, comment: "Exceptional DeFi research. Worth every SOL — the methodology section alone is gold.", date: "2026-06-09", sentiment: "very_positive" },
+      { id: 7, listingId: 5, reviewer: "4aKw...jQ7r", rating: 2, comment: "Key worked for 20 days then expired. No response from seller for refund.", date: "2026-06-04", sentiment: "negative" },
+      { id: 8, listingId: 6, reviewer: "6vHq...dE2x", rating: 4, comment: "Solid floor data across all 15 collections. Would have liked longer history.", date: "2026-06-06", sentiment: "positive" },
+    ];
+
+    const SELLER_RATINGS = {
+      "8xYz...mN3p": { avg: 4.5, count: 2  },
+      "4aKw...jQ7r": { avg: 4.5, count: 2  },
+      "2rTp...bL9s": { avg: 3.0, count: 1  },
+      "9nWm...cF4k": { avg: 5.0, count: 1  },
+      "6vHq...dE2x": { avg: 2.0, count: 1  },
+      "3mJs...hA8t": { avg: 4.0, count: 1  },
+    };
+
     // ── rendering ─────────────────────────────────────────────────────
     const CATEGORY_STYLES = {
       "market-data": "text-blue-400 bg-blue-400/10 border-blue-400/20",
@@ -308,6 +383,21 @@
       return `${addr.slice(0, 4)}…${addr.slice(-4)}`;
     }
 
+    function starDisplay(rating) {
+      const filled = Math.round(rating);
+      return '<span class="text-[#14F195]">' + '★'.repeat(filled) + '</span>' +
+             '<span class="text-white/20">' + '☆'.repeat(5 - filled) + '</span>';
+    }
+
+    function renderReviewBadge(seller) {
+      const r = SELLER_RATINGS[seller];
+      if (!r) return '';
+      return `<div class="flex items-center gap-1 mb-3">
+        <span class="text-xs text-white/40">${starDisplay(r.avg)}</span>
+        <span class="text-[11px] text-white/35">${r.avg} (${r.count})</span>
+      </div>`;
+    }
+
     function fmtCountdown(totalSec) {
       const h = Math.floor(totalSec / 3600);
       const m = Math.floor((totalSec % 3600) / 60);
@@ -323,8 +413,9 @@
             <span class="text-white/30 text-xs mono">${truncateAddr(item.seller)}</span>
           </div>
           <h3 class="font-semibold text-sm mb-2 group-hover:text-[#14F195] transition">${item.title}</h3>
-          <p class="text-white/40 text-xs mb-4 leading-relaxed">${item.preview}</p>
-          <div class="flex gap-1 mb-4 flex-wrap">
+          <p class="text-white/40 text-xs mb-3 leading-relaxed">${item.preview}</p>
+          ${renderReviewBadge(item.seller)}
+          <div class="flex gap-1 mb-3 flex-wrap">
             ${item.tags.map(t => `<span class="pill bg-white/5 border border-white/10 text-white/40">#${t}</span>`).join("")}
           </div>
           <div class="rounded-xl bg-white/[0.03] border border-white/10 p-3 mb-3">
@@ -525,6 +616,89 @@
       clearTimeout(window._toastTimer);
       window._toastTimer = setTimeout(() => el.classList.add("hidden"), 4000);
     }
+
+    // ── review helpers ────────────────────────────────────────────────
+    let selectedRating = 0;
+
+    const RATING_LABELS_MAP = {
+      1: "Poor — significant issues",
+      2: "Fair — below expectations",
+      3: "Good — meets basic needs",
+      4: "Very Good — solid quality",
+      5: "Excellent — exceeded expectations",
+    };
+
+    function renderReviewCard(review) {
+      const date = new Date(review.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      const sentimentColor = {
+        very_positive: "text-[#14F195]",
+        positive:       "text-green-400",
+        neutral:        "text-yellow-400",
+        negative:       "text-red-400",
+        very_negative:  "text-red-500",
+      }[review.sentiment] ?? "text-white/40";
+      return `
+        <div class="panel rounded-2xl p-5 hover:bg-white/5 transition">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-xs text-white/30 mono">${review.reviewer}</span>
+                <span class="${sentimentColor} text-[10px] uppercase tracking-widest border border-current/20 px-1.5 py-0.5 rounded">${review.sentiment.replace("_", " ")}</span>
+              </div>
+              <div class="text-xs text-white/40">Listing #${review.listingId} · ${date}</div>
+            </div>
+            <div class="text-right">
+              <div class="text-lg font-bold">${starDisplay(review.rating)}</div>
+            </div>
+          </div>
+          <p class="text-sm text-white/60 leading-relaxed">${review.comment}</p>
+        </div>`;
+    }
+
+    function mountReviews() {
+      const feed = document.getElementById("reviewFeed");
+      if (!feed) return;
+      feed.innerHTML = SAMPLE_REVIEWS.map(renderReviewCard).join("");
+    }
+
+    function openReviewModal() {
+      if (!requireWallet()) return;
+      selectedRating = 0;
+      document.querySelectorAll("#starPicker button").forEach(btn => btn.className = "text-2xl text-white/20 hover:text-[#14F195] transition");
+      document.getElementById("ratingLabel").textContent = "Select a rating";
+      document.getElementById("reviewComment").value = "";
+      document.getElementById("charCount").textContent = "0";
+      document.getElementById("reviewModal").classList.remove("hidden");
+    }
+
+    function closeReviewModal() {
+      document.getElementById("reviewModal").classList.add("hidden");
+    }
+
+    function setRating(n) {
+      selectedRating = n;
+      document.querySelectorAll("#starPicker button").forEach((btn, i) => {
+        btn.className = i < n ? "text-2xl text-[#14F195] transition" : "text-2xl text-white/20 hover:text-[#14F195] transition";
+      });
+      document.getElementById("ratingLabel").textContent = RATING_LABELS_MAP[n] ?? "";
+    }
+
+    document.getElementById("reviewComment")?.addEventListener("input", function () {
+      document.getElementById("charCount").textContent = this.value.length;
+    });
+
+    function submitReview() {
+      const listing = document.getElementById("reviewListing").value;
+      const comment = document.getElementById("reviewComment").value.trim();
+      if (selectedRating === 0) { notify("Please select a star rating", "orange"); return; }
+      if (!comment || comment.length < 10) { notify("Comment must be at least 10 characters", "orange"); return; }
+      if (!comment || comment.length > 280) { notify("Comment exceeds 280 character limit", "orange"); return; }
+      notify(`Review submitted for listing #${listing} — ${selectedRating} stars — trust score updated`, "green");
+      closeReviewModal();
+    }
+
+    // mount on load
+    mountReviews();
   </script>
 </body>
 </html>
