@@ -59,6 +59,25 @@ export {
   type ReviewValidationResult,
 } from "./review";
 export {
+  computeDutchPrice,
+  minRequiredBid,
+  validateBid,
+  computeAuctionFees,
+  estimateCloseTime,
+  lamportsToSol,
+  formatTimestamp,
+  timeRemaining,
+  ANTI_SNIPE,
+  type AuctionType,
+  type BidPayload,
+  type BidValidationResult,
+  type AuctionFees,
+  type EnglishAuction,
+  type DutchAuction,
+  type SealedAuction,
+  type AntiSnipeConfig,
+} from "./auction";
+export {
   OBSCRA_RPC_ENDPOINT,
   OBSCRA_RPC_LABEL,
   resolveObscraRpcEndpoint,

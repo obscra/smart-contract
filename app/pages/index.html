@@ -329,9 +329,9 @@
     ];
 
     const SAMPLE_AUCTIONS = [
-      { id: 1, title: "Proprietary HFT Signal Bundle",  category: "signals",     topBid: 4.5, endDelta: 3600 * 2, bids: 7,  seller: "1fGh...pX5u" },
-      { id: 2, title: "Rare On-Chain Label Dataset",     category: "ml-models",   topBid: 2.1, endDelta: 3600 * 8, bids: 3,  seller: "5kRn...vY0w" },
-      { id: 3, title: "Cross-Exchange Arbitrage Logs",   category: "market-data", topBid: 6.0, endDelta: 900,      bids: 12, seller: "7bLe...qM6z" },
+      { id: 1, title: "Proprietary HFT Signal Bundle",  category: "signals",     topBid: 4.5,  endDelta: 3600 * 2, bids: 7,  seller: "1fGh...pX5u", antiSnipe: true,  bidHistory: ["2mLp...kQ9w","8nRt...vB3z","4qVw...mP7k"], startPrice: 1.5, minIncrement: 0.05 },
+      { id: 2, title: "Rare On-Chain Label Dataset",     category: "ml-models",   topBid: 2.1,  endDelta: 3600 * 8, bids: 3,  seller: "5kRn...vY0w", antiSnipe: false, bidHistory: ["9bKs...rT2x","3fLm...qW5n"], startPrice: 0.8, minIncrement: 0.02 },
+      { id: 3, title: "Cross-Exchange Arbitrage Logs",   category: "market-data", topBid: 6.0,  endDelta: 900,      bids: 12, seller: "7bLe...qM6z", antiSnipe: true,  bidHistory: ["5kNm...pL1z","2rMw...jQ8x","8vPt...kB4w","3qRw...nF6t"], startPrice: 2.0, minIncrement: 0.10 },
     ];
 
     const SAMPLE_DUTCH = [
@@ -453,26 +453,63 @@
     }
 
     function renderAuctionCard(item) {
+      const minBid = item.topBid + item.minIncrement;
+      const priceChange = item.topBid - item.startPrice;
+      const changeColor = priceChange > 0 ? "text-[#14F195]" : "text-red-400";
+      const changeSign = priceChange > 0 ? "+" : "";
+      const antiSnipeLabel = item.antiSnipe
+        ? `<span class="pill bg-orange-500/10 text-orange-400 border border-orange-500/20">60s anti-snipe</span>`
+        : `<span class="pill bg-white/5 text-white/30 border border-white/10">no anti-snipe</span>`;
+      const latestBidder = item.bidHistory[0] ?? "—";
       return `
         <div class="panel rounded-2xl p-5 hover:bg-white/5 transition cursor-pointer group">
           <div class="flex items-start justify-between mb-3">
             ${categoryPill(item.category)}
-            <span class="pill bg-red-500/10 text-red-400 border border-red-500/20">LIVE</span>
+            <div class="flex gap-1 flex-wrap justify-end">
+              ${antiSnipeLabel}
+              <span class="pill bg-red-500/10 text-red-400 border border-red-500/20">LIVE</span>
+            </div>
           </div>
-          <h3 class="font-semibold text-sm mb-3 group-hover:text-[#14F195] transition">${item.title}</h3>
-          <div class="flex justify-between text-xs mb-4">
-            <div><div class="text-white/40">Top Bid</div><div class="text-lg font-bold">${item.topBid} SOL</div></div>
-            <div class="text-right"><div class="text-white/40">Bids</div><div class="text-lg font-bold">${item.bids}</div></div>
+          <h3 class="font-semibold text-sm mb-2 group-hover:text-[#14F195] transition">${item.title}</h3>
+          <div class="flex items-center gap-2 mb-4 text-xs text-white/35">
+            <span>Seller:</span><span class="mono">${item.seller}</span>
           </div>
-          <div class="bg-white/5 rounded-lg p-3 mb-4">
-            <div class="text-xs text-white/40 mb-1">Ends in</div>
+          <div class="grid grid-cols-3 gap-2 mb-4">
+            <div class="rounded-xl bg-white/[0.03] border border-white/10 p-3 text-center">
+              <div class="text-xs text-white/35 mb-1">Top Bid</div>
+              <div class="text-lg font-bold gradient-text">${item.topBid} SOL</div>
+              <div class="text-[10px] ${changeColor}">${changeSign}${priceChange} SOL</div>
+            </div>
+            <div class="rounded-xl bg-white/[0.03] border border-white/10 p-3 text-center">
+              <div class="text-xs text-white/35 mb-1">Bids</div>
+              <div class="text-lg font-bold">${item.bids}</div>
+              <div class="text-[10px] text-white/30">${item.minIncrement} min</div>
+            </div>
+            <div class="rounded-xl bg-white/[0.03] border border-white/10 p-3 text-center">
+              <div class="text-xs text-white/35 mb-1">Min Bid</div>
+              <div class="text-lg font-bold">${minBid.toFixed(2)}</div>
+              <div class="text-[10px] text-white/30">SOL</div>
+            </div>
+          </div>
+          <div class="bg-white/5 rounded-lg p-3 mb-3">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs text-white/40">Ends in</span>
+              <span class="text-[10px] text-white/25">${antiSnipeLabel.includes("anti-snipe") ? "anti-snipe active" : ""}</span>
+            </div>
             <div class="tabular text-sm font-mono font-bold text-[#14F195]" data-end="${Date.now() + item.endDelta * 1000}">
               ${fmtCountdown(item.endDelta)}
             </div>
           </div>
+          <div class="rounded-lg bg-white/[0.02] border border-white/10 p-2 mb-4">
+            <div class="text-[10px] text-white/30 mb-1">Latest bidder</div>
+            <div class="text-xs mono text-white/50 truncate">${latestBidder}</div>
+            <div class="flex gap-1 mt-1">
+              ${item.bidHistory.slice(0,3).map(b => `<span class="text-[9px] mono text-white/25">${b}</span>`).join("")}
+            </div>
+          </div>
           <button onclick="onBid(${item.id})"
             class="w-full py-2 rounded-lg border border-[#9945FF]/40 text-[#9945FF] text-xs font-semibold hover:bg-[#9945FF]/10 transition">
-            Place Bid →
+            Place Bid (min ${minBid.toFixed(2)} SOL) →
           </button>
         </div>`;
     }
