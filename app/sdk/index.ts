@@ -59,6 +59,23 @@ export {
   type ReviewValidationResult,
 } from "./review";
 export {
+  filterListings,
+  computeMarketplaceStats,
+  toggleWishlist,
+  isInWishlist,
+  formatPrice,
+  formatListingId,
+  MARKETPLACE_CATEGORIES,
+  LISTINGS_PER_PAGE,
+  type ListingCategory,
+  type SortOption,
+  type MarketplaceListing,
+  type MarketplaceFilters,
+  type MarketplaceStats,
+  type WishlistEntry,
+  type CompareEntry,
+} from "./marketplace";
+export {
   computeDutchPrice,
   minRequiredBid,
   validateBid,

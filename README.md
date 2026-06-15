@@ -69,7 +69,7 @@ This repo contains the **Solana smart contract** (`data_market`) handling all on
 
 | Feature | Name | What it does |
 |---|---|---|
-| Fixed-price sale | **Market** | Set a SOL price, buyer pays, decryption key is delivered |
+| Marketplace | **Market** | Fixed-price listings with category filtering, search, sort, wishlist, seller ratings, view/sales tracking, and AI-generated asset previews |
 | Ascending auction | **Data Drops** | Live bidding with escrow, 60s anti-snipe timer, atomic refunds, bid history tracking, and minimum increment enforcement |
 | Sealed-bid auction | **Private Drop** | Commit-reveal with keccak256 — bids stay hidden until reveal |
 | Declining-price | **Dutch Drop** | Price falls linearly; first buyer to fill wins at clock price |

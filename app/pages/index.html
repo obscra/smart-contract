@@ -96,7 +96,7 @@
     </div>
 
     <!-- stats -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16">
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mt-16">
       <div class="panel rounded-xl p-4">
         <div class="text-2xl font-bold gradient-text" id="metricListings">—</div>
         <div class="text-xs text-white/40 mt-1">Total Listings</div>
@@ -111,20 +111,63 @@
       </div>
       <div class="panel rounded-xl p-4">
         <div class="text-2xl font-bold gradient-text" id="metricSubs">—</div>
-        <div class="text-xs text-white/40 mt-1">Active Subscriptions</div>
+        <div class="text-xs text-white/40 mt-1">Active Subs</div>
       </div>
-      <div class="panel rounded-xl p-4 md:col-span-4">
-        <div class="flex items-center justify-center gap-3 flex-wrap">
-          <span class="pill bg-[#14F195]/10 text-[#14F195] border border-[#14F195]/20 uppercase tracking-widest">Large Object Tier</span>
-          <span class="text-2xl font-bold gradient-text">2 GiB</span>
-          <span class="text-xs text-white/40">encrypted upload envelope · multipart preflight · checksum indexed</span>
-        </div>
+      <div class="panel rounded-xl p-4">
+        <div class="text-2xl font-bold gradient-text" id="metricSellers">—</div>
+        <div class="text-xs text-white/40 mt-1">Active Sellers</div>
+      </div>
+      <div class="panel rounded-xl p-4">
+        <div class="text-2xl font-bold gradient-text" id="metricAvgPrice">—</div>
+        <div class="text-xs text-white/40 mt-1">Avg Price (SOL)</div>
+      </div>
+    </div>
+    <!-- Marketplace Tier Banner -->
+    <div class="panel rounded-xl p-4 mt-4">
+      <div class="flex items-center justify-center gap-3 flex-wrap">
+        <span class="pill bg-[#14F195]/10 text-[#14F195] border border-[#14F195]/20 uppercase tracking-widest">Large Object Tier</span>
+        <span class="text-2xl font-bold gradient-text">2 GiB</span>
+        <span class="text-white/40">·</span>
+        <span class="pill bg-[#9945FF]/10 text-[#9945FF] border border-[#9945FF]/20">Xona AI</span>
+        <span class="text-white/40">·</span>
+        <span class="pill bg-white/5 text-white/50 border border-white/10">Blur Preview</span>
+        <span class="text-white/40">·</span>
+        <span class="text-xs text-white/40">AES-256-GCM · SHA-256 manifest · IPFS handoff</span>
       </div>
     </div>
   </section>
 
-  <!-- ── TABS ───────────────────────────────────────────────────────── -->
-  <section class="px-6 max-w-6xl mx-auto" id="listings">
+  <!-- ── MARKETPLACE FILTERS ────────────────────────────────────────── -->
+  <section class="px-6 max-w-6xl mx-auto mt-8" id="listings">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+      <div class="flex flex-wrap gap-2">
+        <button onclick="setCategoryFilter('all')" id="filterAll"    class="px-4 py-2 rounded-lg text-xs font-medium bg-[#9945FF]/20 text-[#9945FF] border border-[#9945FF]/30 hover:bg-[#9945FF]/30 transition">All</button>
+        <button onclick="setCategoryFilter('market-data')" id="filterMarketData" class="px-4 py-2 rounded-lg text-xs font-medium panel hover:bg-white/5 transition">📊 Market Data</button>
+        <button onclick="setCategoryFilter('ml-models')"   id="filterMlModels"   class="px-4 py-2 rounded-lg text-xs font-medium panel hover:bg-white/5 transition">🧠 ML Models</button>
+        <button onclick="setCategoryFilter('signals')"     id="filterSignals"     class="px-4 py-2 rounded-lg text-xs font-medium panel hover:bg-white/5 transition">🚦 Signals</button>
+        <button onclick="setCategoryFilter('research')"    id="filterResearch"    class="px-4 py-2 rounded-lg text-xs font-medium panel hover:bg-white/5 transition">📄 Research</button>
+        <button onclick="setCategoryFilter('api-access')"  id="filterApiAccess"  class="px-4 py-2 rounded-lg text-xs font-medium panel hover:bg-white/5 transition">🔑 API Access</button>
+      </div>
+      <div class="flex items-center gap-3">
+        <input id="searchInput" type="text" placeholder="Search listings..."
+          class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-xs focus:outline-none focus:border-[#9945FF] w-48" />
+        <select id="sortSelect" onchange="setSortOption(this.value)"
+          class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-[#9945FF]">
+          <option value="newest">Newest</option>
+          <option value="price_asc">Price ↑</option>
+          <option value="price_desc">Price ↓</option>
+          <option value="rating_desc">Top Rated</option>
+          <option value="popular">Most Popular</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 mb-4 text-xs text-white/35">
+      <span id="resultCount">Showing all listings</span>
+      <span>·</span>
+      <button onclick="toggleWishlistView()" id="wishlistToggle" class="hover:text-white transition">♡ Wishlist (0)</button>
+    </div>
+
+    <!-- TABS -->
     <div class="flex gap-1 border-b border-white/5 mb-8 overflow-x-auto">
       <button data-tab="listings"      class="tab px-5 py-3 text-sm font-medium transition tab-selected">Fixed Price</button>
       <button data-tab="auctions"      class="tab px-5 py-3 text-sm font-medium text-white/40 transition hover:text-white">English Auctions</button>
@@ -320,12 +363,14 @@
   <script>
     // ── sample data ───────────────────────────────────────────────────
     const SAMPLE_LISTINGS = [
-      { id: 1, title: "ETH/USD 1-min OHLCV 2024",      category: "market-data", price: 1.5, seller: "8xYz...mN3p", tags: ["crypto","ohlcv"],  preview: "12-month tick-by-tick candles for ETH/USD, CSV + Parquet format.", metadata: { file: "eth_usd_ohlcv_2024.parquet", size: "1.42 GiB", type: "Parquet", checksum: "sha256:7c4f…91ab", chunks: 91, encrypted: "AES-256-GCM" }, ai: { confidence: "0.94", summary: "Generated premium market-data description and neon candlestick image prompt." } },
-      { id: 2, title: "GPT-4 Synthetic Q&A Dataset",    category: "ml-models",   price: 3.2, seller: "4aKw...jQ7r", tags: ["nlp","fine-tune"], preview: "500 k instruction pairs for LLM fine-tuning, Apache-2 license.", metadata: { file: "synthetic_qa_corpus.jsonl", size: "860 MiB", type: "JSONL", checksum: "sha256:b19e…42de", chunks: 54, encrypted: "AES-256-GCM" }, ai: { confidence: "0.91", summary: "Generated ML-focused listing copy and abstract neural dataset visual prompt." } },
-      { id: 3, title: "Solana Whale Alert Feed Q1",     category: "signals",     price: 0.8, seller: "2rTp...bL9s", tags: ["on-chain","whale"], preview: "All >$500 k SOL transfers with wallet labels, Jan – Mar 2026.", metadata: { file: "sol_whale_feed_q1.csv", size: "318 MiB", type: "CSV", checksum: "sha256:03aa…e77c", chunks: 20, encrypted: "AES-256-GCM" }, ai: { confidence: "0.88", summary: "Generated whale-signal description and oceanic on-chain flow image prompt." } },
-      { id: 4, title: "DeFi Alpha Report — April 2026", category: "research",    price: 2.0, seller: "9nWm...cF4k", tags: ["defi","alpha"], preview: "37-page proprietary analysis covering top-10 protocols.", metadata: { file: "defi_alpha_apr_2026.pdf", size: "74 MiB", type: "PDF", checksum: "sha256:aa81…19f0", chunks: 5, encrypted: "AES-256-GCM" }, ai: { confidence: "0.86", summary: "Generated institutional research copy and DeFi dashboard image prompt." } },
-      { id: 5, title: "Birdeye API Pro Key (30 days)",  category: "api-access",  price: 0.5, seller: "6vHq...dE2x", tags: ["api","birdeye"], preview: "Resold premium key — 30-day access, 1 M calls / day.", metadata: { file: "birdeye_access_manifest.json", size: "12 KiB", type: "Manifest", checksum: "sha256:bc90…41a2", chunks: 1, encrypted: "sealed-key" }, ai: { confidence: "0.79", summary: "Generated API-access listing copy and secure key handoff visual prompt." } },
-      { id: 6, title: "NFT Floor-Price Time Series",    category: "market-data", price: 1.1, seller: "3mJs...hA8t", tags: ["nft","floor"], preview: "15 collections tracked hourly for 90 days.", metadata: { file: "nft_floor_timeseries.avro", size: "526 MiB", type: "Avro", checksum: "sha256:f3d2…b72e", chunks: 33, encrypted: "AES-256-GCM" }, ai: { confidence: "0.90", summary: "Generated NFT analytics description and collection floor-chart image prompt." } },
+      { id: 1,  title: "ETH/USD 1-min OHLCV 2024",      category: "market-data", price: 1.5, seller: "8xYz...mN3p", tags: ["crypto","ohlcv"],  views: 1247, sales: 34, preview: "12-month tick-by-tick candles for ETH/USD, CSV + Parquet format.", metadata: { file: "eth_usd_ohlcv_2024.parquet", size: "1.42 GiB", type: "Parquet", checksum: "sha256:7c4f…91ab", chunks: 91, encrypted: "AES-256-GCM" }, ai: { confidence: "0.94", summary: "Generated premium market-data description." }, sellerRating: { avg: 4.5, count: 28 } },
+      { id: 2,  title: "GPT-4 Synthetic Q&A Dataset",    category: "ml-models",   price: 3.2, seller: "4aKw...jQ7r", tags: ["nlp","fine-tune"], views: 892, sales: 12, preview: "500 k instruction pairs for LLM fine-tuning, Apache-2 license.", metadata: { file: "synthetic_qa_corpus.jsonl", size: "860 MiB", type: "JSONL", checksum: "sha256:b19e…42de", chunks: 54, encrypted: "AES-256-GCM" }, ai: { confidence: "0.91", summary: "Generated ML-focused listing copy." }, sellerRating: { avg: 4.5, count: 11 } },
+      { id: 3,  title: "Solana Whale Alert Feed Q1",     category: "signals",     price: 0.8, seller: "2rTp...bL9s", tags: ["on-chain","whale"], views: 2103, sales: 56, preview: "All >$500 k SOL transfers with wallet labels, Jan – Mar 2026.", metadata: { file: "sol_whale_feed_q1.csv", size: "318 MiB", type: "CSV", checksum: "sha256:03aa…e77c", chunks: 20, encrypted: "AES-256-GCM" }, ai: { confidence: "0.88", summary: "Generated whale-signal description." }, sellerRating: { avg: 3.8, count: 55 } },
+      { id: 4,  title: "DeFi Alpha Report — April 2026", category: "research",    price: 2.0, seller: "9nWm...cF4k", tags: ["defi","alpha"], views: 445, sales: 8, preview: "37-page proprietary analysis covering top-10 protocols.", metadata: { file: "defi_alpha_apr_2026.pdf", size: "74 MiB", type: "PDF", checksum: "sha256:aa81…19f0", chunks: 5, encrypted: "AES-256-GCM" }, ai: { confidence: "0.86", summary: "Generated institutional research copy." }, sellerRating: { avg: 5.0, count: 7 } },
+      { id: 5,  title: "Birdeye API Pro Key (30 days)",  category: "api-access",  price: 0.5, seller: "6vHq...dE2x", tags: ["api","birdeye"], views: 678, sales: 22, preview: "Resold premium key — 30-day access, 1 M calls / day.", metadata: { file: "birdeye_access_manifest.json", size: "12 KiB", type: "Manifest", checksum: "sha256:bc90…41a2", chunks: 1, encrypted: "sealed-key" }, ai: { confidence: "0.79", summary: "Generated API-access listing copy." }, sellerRating: { avg: 2.3, count: 18 } },
+      { id: 6,  title: "NFT Floor-Price Time Series",    category: "market-data", price: 1.1, seller: "3mJs...hA8t", tags: ["nft","floor"], views: 312, sales: 5, preview: "15 collections tracked hourly for 90 days.", metadata: { file: "nft_floor_timeseries.avro", size: "526 MiB", type: "Avro", checksum: "sha256:f3d2…b72e", chunks: 33, encrypted: "AES-256-GCM" }, ai: { confidence: "0.90", summary: "Generated NFT analytics description." }, sellerRating: { avg: 4.0, count: 4 } },
+      { id: 7,  title: "Bitcoin Liquidations Feed",       category: "signals",     price: 0.3, seller: "7kLm...qR2p", tags: ["btc","liquidation"], views: 1890, sales: 89, preview: "Real-time BTC liquidation alerts across top exchanges, JSON stream.", metadata: { file: "btc_liquidations.jsonl", size: "145 MiB", type: "JSONL", checksum: "sha256:9f2a…34bc", chunks: 9, encrypted: "AES-256-GCM" }, ai: { confidence: "0.85", summary: "Generated signal dataset description." }, sellerRating: { avg: 4.2, count: 87 } },
+      { id: 8,  title: "DeFi Liquidity Pool Analytics",  category: "market-data", price: 2.5, seller: "5nPq...kT8w", tags: ["defi","dex","liquidity"], views: 567, sales: 14, preview: "Historical LP data for Uniswap v3 and Raydium pools, 6-month window.", metadata: { file: "defi_lp_analytics.parquet", size: "2.1 GiB", type: "Parquet", checksum: "sha256:1a8c…78de", chunks: 134, encrypted: "AES-256-GCM" }, ai: { confidence: "0.92", summary: "Generated market analytics description." }, sellerRating: { avg: 4.7, count: 12 } },
     ];
 
     const SAMPLE_AUCTIONS = [
@@ -383,6 +428,12 @@
       return `${addr.slice(0, 4)}…${addr.slice(-4)}`;
     }
 
+    // ── marketplace state ─────────────────────────────────────────────
+    let currentCategory = 'all';
+    let currentSort = 'newest';
+    let wishlist = [];
+    let showWishlistOnly = false;
+
     function starDisplay(rating) {
       const filled = Math.round(rating);
       return '<span class="text-[#14F195]">' + '★'.repeat(filled) + '</span>' +
@@ -392,7 +443,7 @@
     function renderReviewBadge(seller) {
       const r = SELLER_RATINGS[seller];
       if (!r) return '';
-      return `<div class="flex items-center gap-1 mb-3">
+      return `<div class="flex items-center gap-1 mb-1">
         <span class="text-xs text-white/40">${starDisplay(r.avg)}</span>
         <span class="text-[11px] text-white/35">${r.avg} (${r.count})</span>
       </div>`;
@@ -406,43 +457,57 @@
     }
 
     function renderListingCard(item) {
+      const wishlisted = wishlist.includes(item.id);
+      const salesBadge = item.sales > 0
+        ? `<span class="pill bg-[#14F195]/10 text-[#14F195] border border-[#14F195]/20 text-[10px]">${item.sales} sold</span>`
+        : `<span class="pill bg-white/5 text-white/30 border border-white/10 text-[10px]">New</span>`;
+      const viewsBadge = `<span class="text-[10px] text-white/25">👁 ${item.views}</span>`;
       return `
-        <div class="panel rounded-2xl p-5 hover:bg-white/5 transition cursor-pointer group">
+        <div class="panel rounded-2xl p-5 hover:bg-white/5 transition cursor-pointer group relative">
+          <button onclick="event.stopPropagation();toggleWishlistItem(${item.id})"
+            class="absolute top-4 right-4 text-lg ${wishlisted ? 'text-[#9945FF]' : 'text-white/20 hover:text-white/40'} transition wishlist-btn" data-id="${item.id}">
+            ${wishlisted ? '♥' : '♡'}
+          </button>
           <div class="flex items-start justify-between mb-3">
             ${categoryPill(item.category)}
-            <span class="text-white/30 text-xs mono">${truncateAddr(item.seller)}</span>
+            <div class="flex flex-col items-end gap-1">
+              <span class="text-white/30 text-xs mono">${truncateAddr(item.seller)}</span>
+              ${viewsBadge}
+            </div>
           </div>
-          <h3 class="font-semibold text-sm mb-2 group-hover:text-[#14F195] transition">${item.title}</h3>
-          <p class="text-white/40 text-xs mb-3 leading-relaxed">${item.preview}</p>
+          <h3 class="font-semibold text-sm mb-1 group-hover:text-[#14F195] transition">${item.title}</h3>
           ${renderReviewBadge(item.seller)}
+          <p class="text-white/40 text-xs mb-3 leading-relaxed">${item.preview}</p>
           <div class="flex gap-1 mb-3 flex-wrap">
             ${item.tags.map(t => `<span class="pill bg-white/5 border border-white/10 text-white/40">#${t}</span>`).join("")}
           </div>
-          <div class="rounded-xl bg-white/[0.03] border border-white/10 p-3 mb-3">
-            <div class="flex items-center justify-between gap-3 mb-2">
-              <span class="text-xs text-white/35">File Metadata</span>
-              <span class="pill bg-[#14F195]/10 text-[#14F195] border border-[#14F195]/20">${item.metadata.size}</span>
+          <div class="flex items-center gap-2 mb-3 text-[10px] text-white/25">
+            ${salesBadge}
+            <span class="text-white/20">·</span>
+            <span>${item.metadata.size}</span>
+            <span class="text-white/20">·</span>
+            <span>${item.metadata.type}</span>
+          </div>
+          <div class="rounded-xl bg-white/[0.03] border border-white/10 p-2 mb-3">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[10px] text-white/35">Checksum</span>
+              <span class="text-[10px] mono text-white/35 truncate max-w-[140px]">${item.metadata.checksum}</span>
             </div>
-            <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-[11px] text-white/45">
-              <span class="truncate mono">${item.metadata.file}</span>
-              <span class="text-right">${item.metadata.type}</span>
-              <span class="mono">${item.metadata.checksum}</span>
-              <span class="text-right">${item.metadata.chunks} chunks</span>
-              <span>${item.metadata.encrypted}</span>
-              <span class="text-right">manifest v1</span>
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] text-white/35">Chunks</span>
+              <span class="text-[10px] text-white/35">${item.metadata.chunks}</span>
             </div>
           </div>
-          <div class="rounded-xl bg-[#9945FF]/5 border border-[#9945FF]/20 p-3 mb-4">
-            <div class="flex items-center justify-between mb-1">
-              <span class="text-xs text-[#9945FF]">Xona Generated Assets</span>
-              <span class="text-[10px] text-white/35 mono">confidence ${item.ai.confidence}</span>
+          <div class="rounded-xl bg-[#9945FF]/5 border border-[#9945FF]/20 p-2 mb-4">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] text-[#9945FF]">Xona AI</span>
+              <span class="text-[10px] text-white/35 mono">${item.ai.confidence}</span>
             </div>
-            <div class="text-xs text-white/45 leading-relaxed">${item.ai.summary}</div>
           </div>
           <div class="flex items-center justify-between">
             <div>
-              <div class="text-lg font-bold">${item.price} <span class="text-[#9945FF] text-sm">SOL</span></div>
-              <div class="text-xs text-white/30">≈ $${(item.price * 165).toFixed(0)} USD</div>
+              <div class="text-lg font-bold gradient-text">${item.price} <span class="text-[#9945FF] text-sm">SOL</span></div>
+              <div class="text-[10px] text-white/30">≈ $${(item.price * 165).toFixed(0)} USD</div>
             </div>
             <button onclick="onBuy(${item.id})"
               class="px-4 py-2 rounded-lg bg-gradient-to-r from-[#9945FF] to-[#14F195] text-xs font-semibold hover:opacity-90 transition">
@@ -736,6 +801,91 @@
 
     // mount on load
     mountReviews();
+    updateMarketplaceStats();
+
+    // ── marketplace helpers ────────────────────────────────────────────
+    function updateMarketplaceStats() {
+      const listings = SAMPLE_LISTINGS;
+      const activeSellers = new Set(listings.map(l => l.seller)).size;
+      const totalSales = listings.reduce((sum, l) => sum + (l.sales || 0), 0);
+      const avgPrice = listings.reduce((sum, l) => sum + l.price, 0) / listings.length;
+
+      document.getElementById('metricSellers').textContent = activeSellers;
+      document.getElementById('metricAvgPrice').textContent = avgPrice.toFixed(1);
+    }
+
+    function setCategoryFilter(category) {
+      currentCategory = category;
+      document.querySelectorAll('[id^="filter"]').forEach(btn => {
+        if (btn.id === 'filterAll' && category === 'all') {
+          btn.className = 'px-4 py-2 rounded-lg text-xs font-medium bg-[#9945FF]/20 text-[#9945FF] border border-[#9945FF]/30';
+        } else if (btn.id === 'filter' + category.replace('-', '')) {
+          btn.className = 'px-4 py-2 rounded-lg text-xs font-medium bg-[#9945FF]/20 text-[#9945FF] border border-[#9945FF]/30';
+        } else {
+          btn.className = 'px-4 py-2 rounded-lg text-xs font-medium panel hover:bg-white/5 transition';
+        }
+      });
+      filterAndRenderListings();
+    }
+
+    function setSortOption(sort) {
+      currentSort = sort;
+      filterAndRenderListings();
+    }
+
+    function filterAndRenderListings() {
+      let filtered = [...SAMPLE_LISTINGS];
+
+      if (currentCategory !== 'all') {
+        filtered = filtered.filter(l => l.category === currentCategory);
+      }
+
+      if (showWishlistOnly) {
+        filtered = filtered.filter(l => wishlist.includes(l.id));
+      }
+
+      const search = document.getElementById('searchInput')?.value?.toLowerCase() || '';
+      if (search) {
+        filtered = filtered.filter(l =>
+          l.title.toLowerCase().includes(search) ||
+          l.preview.toLowerCase().includes(search) ||
+          l.tags.some(t => t.toLowerCase().includes(search))
+        );
+      }
+
+      switch (currentSort) {
+        case 'price_asc':   filtered.sort((a, b) => a.price - b.price); break;
+        case 'price_desc':  filtered.sort((a, b) => b.price - a.price); break;
+        case 'rating_desc': filtered.sort((a, b) => (b.sellerRating?.avg || 0) - (a.sellerRating?.avg || 0)); break;
+        case 'popular':     filtered.sort((a, b) => (b.sales || 0) - (a.sales || 0)); break;
+        default:           filtered.sort((a, b) => b.id - a.id);
+      }
+
+      document.getElementById('tab-listings').innerHTML = filtered.map(renderListingCard).join('');
+      const count = filtered.length;
+      document.getElementById('resultCount').textContent = `Showing ${count} listing${count !== 1 ? 's' : ''}` +
+        (currentCategory !== 'all' ? ` in ${currentCategory}` : '') +
+        (showWishlistOnly ? ' (wishlist)' : '');
+    }
+
+    function toggleWishlistItem(id) {
+      if (wishlist.includes(id)) {
+        wishlist = wishlist.filter(w => w !== id);
+      } else {
+        wishlist.push(id);
+      }
+      document.getElementById('wishlistToggle').textContent = `♡ Wishlist (${wishlist.length})`;
+      filterAndRenderListings();
+    }
+
+    function toggleWishlistView() {
+      showWishlistOnly = !showWishlistOnly;
+      const btn = document.getElementById('wishlistToggle');
+      btn.textContent = showWishlistOnly ? `♥ Wishlist (${wishlist.length})` : `♡ Wishlist (${wishlist.length})`;
+      filterAndRenderListings();
+    }
+
+    document.getElementById('searchInput')?.addEventListener('input', filterAndRenderListings);
   </script>
 </body>
 </html>
