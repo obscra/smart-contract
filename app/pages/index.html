@@ -64,6 +64,7 @@
       <a href="#profile"       class="hover:text-white transition">Profile</a>
       <a href="#xona"          class="hover:text-white transition">Xona AI</a>
       <a href="#reviews"       class="hover:text-white transition">Reviews</a>
+      <a href="#orders"        class="hover:text-white transition">Orders</a>
     </div>
 
     <button id="walletBtn"
@@ -356,6 +357,65 @@
     </div>
   </div>
 
+  <!-- ── ORDERS / PIPELINE ──────────────────────────────────────── -->
+  <section class="px-6 max-w-6xl mx-auto mt-10" id="orders">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-bold">My Orders</h2>
+      <div class="flex items-center gap-2">
+        <button onclick="setOrderFilter('all')"      id="orderFilterAll"      class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#9945FF]/20 text-[#9945FF] border border-[#9945FF]/30">All</button>
+        <button onclick="setOrderFilter('active')"   id="orderFilterActive"   class="px-3 py-1.5 rounded-lg text-xs font-medium panel hover:bg-white/5">Active</button>
+        <button onclick="setOrderFilter('settled')"  id="orderFilterSettled"  class="px-3 py-1.5 rounded-lg text-xs font-medium panel hover:bg-white/5">Settled</button>
+        <button onclick="setOrderFilter('dispute')"  id="orderFilterDispute"  class="px-3 py-1.5 rounded-lg text-xs font-medium panel hover:bg-white/5">Disputes</button>
+      </div>
+    </div>
+    <div class="panel rounded-2xl p-6 mb-6">
+      <h3 class="text-sm font-semibold text-white/60 mb-4">Settlement Pipeline</h3>
+      <div class="flex items-center gap-2 overflow-x-auto pb-2">
+        <div class="flex flex-col items-center min-w-[90px]"><div class="w-9 h-9 rounded-full bg-blue-500/20 border-2 border-blue-400 flex items-center justify-center text-sm font-bold text-blue-400">1</div><div class="text-[9px] text-white/40 mt-1 text-center">Initiated</div></div>
+        <div class="flex-1 h-0.5 bg-gradient-to-r from-blue-400 to-yellow-400 min-w-[20px]"></div>
+        <div class="flex flex-col items-center min-w-[90px]"><div class="w-9 h-9 rounded-full bg-yellow-500/20 border-2 border-yellow-400 flex items-center justify-center text-sm font-bold text-yellow-400">2</div><div class="text-[9px] text-white/40 mt-1 text-center">Escrow Funded</div></div>
+        <div class="flex-1 h-0.5 bg-gradient-to-r from-yellow-400 to-yellow-300 min-w-[20px]"></div>
+        <div class="flex flex-col items-center min-w-[90px]"><div class="w-9 h-9 rounded-full bg-yellow-500/20 border-2 border-yellow-300 flex items-center justify-center text-sm font-bold text-yellow-300">3</div><div class="text-[9px] text-white/40 mt-1 text-center">Key Exchange</div></div>
+        <div class="flex-1 h-0.5 bg-gradient-to-r from-yellow-300 to-[#14F195] min-w-[20px]"></div>
+        <div class="flex flex-col items-center min-w-[90px]"><div class="w-9 h-9 rounded-full bg-[#14F195]/20 border-2 border-[#14F195] flex items-center justify-center text-sm font-bold text-[#14F195]">4</div><div class="text-[9px] text-white/40 mt-1 text-center">Settled</div></div>
+      </div>
+      <p class="text-[11px] text-white/30 mt-4">All orders are secured via on-chain escrow with automatic fee distribution. Disputes can be opened within 7 days of settlement.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="ordersFeed"></div>
+    <div class="mt-8">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-sm font-semibold text-white/60">Notifications</h3>
+        <span class="pill bg-red-500/20 text-red-400 border border-red-500/30 text-xs" id="notifBadge">3 new</span>
+      </div>
+      <div class="space-y-2" id="notificationsFeed">
+        <div class="panel rounded-xl p-4 flex items-start gap-3 hover:bg-white/5 transition cursor-pointer">
+          <div class="w-2 h-2 rounded-full bg-[#14F195] mt-1.5 shrink-0"></div>
+          <div>
+            <div class="text-xs font-semibold">Settlement Complete</div>
+            <div class="text-[11px] text-white/40 mt-0.5">Your purchase of listing #1 (ETH/USD OHLCV 2024) is complete. Decryption key delivered.</div>
+            <div class="text-[10px] text-white/25 mt-1">2 hours ago</div>
+          </div>
+        </div>
+        <div class="panel rounded-xl p-4 flex items-start gap-3 hover:bg-white/5 transition cursor-pointer">
+          <div class="w-2 h-2 rounded-full bg-[#14F195] mt-1.5 shrink-0"></div>
+          <div>
+            <div class="text-xs font-semibold">Review Reminder</div>
+            <div class="text-[11px] text-white/40 mt-0.5">Leave a review for listing #1 to boost seller trust scores.</div>
+            <div class="text-[10px] text-white/25 mt-1">5 hours ago</div>
+          </div>
+        </div>
+        <div class="panel rounded-xl p-4 flex items-start gap-3 hover:bg-white/5 transition cursor-pointer opacity-60">
+          <div class="w-2 h-2 rounded-full bg-white/20 mt-1.5 shrink-0"></div>
+          <div>
+            <div class="text-xs font-semibold text-white/50">Escrow Funded</div>
+            <div class="text-[11px] text-white/30 mt-0.5">Escrow for listing #3 has been funded. Waiting for seller key delivery.</div>
+            <div class="text-[10px] text-white/20 mt-1">1 day ago</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ── TOAST ──────────────────────────────────────────────────────── -->
   <div id="toast" class="hidden fixed bottom-6 right-6 panel rounded-xl px-5 py-3 text-sm glow-accent border-[#14F195]/30 max-w-sm"></div>
 
@@ -409,6 +469,14 @@
       "6vHq...dE2x": { avg: 2.0, count: 1  },
       "3mJs...hA8t": { avg: 4.0, count: 1  },
     };
+
+    const SAMPLE_ORDERS = [
+      { id: "order_8xYz_ab12", listingId: 1,  title: "ETH/USD 1-min OHLCV 2024",    status: "settlement_complete", price: 1.5,  escrow: "escrow_1_8xYz", seller: "8xYz...mN3p", buyer: "me...4kLm", fee: 0.0375, net: 1.4625, tx: "5mKp...zX9w", date: "2026-06-08", fileName: "eth_usd_ohlcv_2024.parquet", fileSize: "1.42 GiB", disputeDeadline: "2026-06-15" },
+      { id: "order_4kLm_cd34", listingId: 2,  title: "GPT-4 Synthetic Q&A Dataset",  status: "key_exchange_pending", price: 3.2,  escrow: "escrow_2_4kLm", seller: "4aKw...jQ7r", buyer: "me...4kLm", fee: 0.08,    net: 3.12,    tx: "",          date: "2026-06-10", fileName: "synthetic_qa_corpus.jsonl", fileSize: "860 MiB", disputeDeadline: "2026-06-17" },
+      { id: "order_7nPq_ef56", listingId: 3,  title: "Solana Whale Alert Feed Q1",   status: "escrow_funded",       price: 0.8,  escrow: "escrow_3_7nPq", seller: "2rTp...bL9s", buyer: "me...4kLm", fee: 0.02,    net: 0.78,    tx: "",          date: "2026-06-11", fileName: "sol_whale_feed_q1.csv",  fileSize: "318 MiB", disputeDeadline: "2026-06-18" },
+      { id: "order_2rMw_gh78", listingId: 5,  title: "Birdeye API Pro Key (30 days)", status: "dispute_opened",     price: 0.5,  escrow: "escrow_5_2rMw", seller: "6vHq...dE2x", buyer: "me...4kLm", fee: 0.0125,  net: 0.4875,  tx: "9nRt...vB3z", date: "2026-06-04", fileName: "birdeye_access_manifest.json", fileSize: "12 KiB", disputeDeadline: "2026-06-11" },
+    ];
+    let currentOrderFilter = 'all';
 
     // ── rendering ─────────────────────────────────────────────────────
     const CATEGORY_STYLES = {
@@ -886,6 +954,44 @@
     }
 
     document.getElementById('searchInput')?.addEventListener('input', filterAndRenderListings);
+
+    // ── orders pipeline
+    const STATUS_CONFIG = {
+      initiated:             { label: "Initiated",             color: "text-blue-400",   bg: "bg-blue-500/10",   border: "border-blue-500/30"   },
+      escrow_funded:          { label: "Escrow Funded",         color: "text-blue-400",   bg: "bg-blue-500/10",   border: "border-blue-500/30"   },
+      key_exchange_pending:   { label: "Key Exchange Pending",  color: "text-yellow-400", bg: "bg-yellow-500/10", border: "border-yellow-500/30" },
+      key_exchanged:          { label: "Key Exchanged",         color: "text-yellow-400", bg: "bg-yellow-500/10", border: "border-yellow-500/30" },
+      settlement_complete:    { label: "Settled",               color: "text-[#14F195]",  bg: "bg-[#14F195]/10",  border: "border-[#14F195]/30"  },
+      dispute_opened:         { label: "Dispute",               color: "text-red-400",    bg: "bg-red-500/10",    border: "border-red-500/30"    },
+      refunded:               { label: "Refunded",              color: "text-white/50",   bg: "bg-white/5",       border: "border-white/10"      },
+      cancelled:              { label: "Cancelled",             color: "text-white/30",   bg: "bg-white/5",       border: "border-white/10"      },
+    };
+
+    function renderOrderCard(order) {
+      const cfg = STATUS_CONFIG[order.status] || STATUS_CONFIG.initiated;
+      return '<div class="panel rounded-2xl p-5 hover:bg-white/5 transition"><div class="flex items-start justify-between mb-3"><div><div class="text-xs text-white/30 mono mb-1">' + order.id + '</div><h3 class="font-semibold text-sm">' + order.title + '</h3><div class="text-[11px] text-white/40 mt-0.5">Listing #' + order.listingId + ' · ' + order.date + '</div></div><span class="pill ' + cfg.bg + ' ' + cfg.color + ' border ' + cfg.border + ' text-[10px]">' + cfg.label + '</span></div><div class="rounded-xl bg-white/[0.03] border border-white/10 p-3 mb-3"><div class="grid grid-cols-2 gap-2 text-[11px]"><div><span class="text-white/35">File</span><div class="mono truncate">' + order.fileName + '</div></div><div><span class="text-white/35">Size</span><div>' + order.fileSize + '</div></div><div><span class="text-white/35">Escrow</span><div class="mono truncate">' + order.escrow + '</div></div><div><span class="text-white/35">Price</span><div class="gradient-text font-bold">' + order.price + ' SOL</div></div><div><span class="text-white/35">Fee</span><div>' + order.fee + ' SOL</div></div><div><span class="text-white/35">Net</span><div>' + order.net + ' SOL</div></div></div></div><div class="flex items-center justify-between"><span class="text-[10px] text-white/25">Deadline: ' + order.disputeDeadline + '</span></div></div>';
+    }
+
+    function mountOrders() {
+      const feed = document.getElementById('ordersFeed');
+      if (!feed) return;
+      let filtered = SAMPLE_ORDERS;
+      if (currentOrderFilter === 'active') filtered = SAMPLE_ORDERS.filter(o => ['initiated','escrow_funded','key_exchange_pending'].includes(o.status));
+      else if (currentOrderFilter === 'settled') filtered = SAMPLE_ORDERS.filter(o => ['settlement_complete','refunded','cancelled'].includes(o.status));
+      else if (currentOrderFilter === 'dispute') filtered = SAMPLE_ORDERS.filter(o => o.status === 'dispute_opened');
+      feed.innerHTML = filtered.map(renderOrderCard).join('');
+    }
+
+    function setOrderFilter(filter) {
+      currentOrderFilter = filter;
+      document.querySelectorAll('[id^="orderFilter"]').forEach(btn => {
+        const key = btn.id.replace('orderFilter','').toLowerCase();
+        btn.className = key === filter ? 'px-3 py-1.5 rounded-lg text-xs font-medium bg-[#9945FF]/20 text-[#9945FF] border border-[#9945FF]/30' : 'px-3 py-1.5 rounded-lg text-xs font-medium panel hover:bg-white/5';
+      });
+      mountOrders();
+    }
+
+    mountOrders();
   </script>
 </body>
 </html>
