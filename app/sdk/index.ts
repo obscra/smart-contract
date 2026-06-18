@@ -59,6 +59,24 @@ export {
   type ReviewValidationResult,
 } from "./review";
 export {
+  simulateIpfsUpload,
+  getIpfsMetadata,
+  computeStorageQuota,
+  formatStorageSize,
+  validateFileSize,
+  defaultUploadConfig,
+  PINATA_CONFIG,
+  CONCURRENCY_MAP,
+  type IpfsUploadConfig,
+  type IpfsUploadResult,
+  type IpfsContentMetadata,
+  type StorageQuota,
+  type StorageClass,
+  type UploadConcurrency,
+  type PinStatus,
+  type PinataConfig,
+} from "./ipfsStorage";
+export {
   createPipelineOrder,
   advancePipeline,
   computeSettlementFees,

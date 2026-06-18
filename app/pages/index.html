@@ -65,6 +65,7 @@
       <a href="#xona"          class="hover:text-white transition">Xona AI</a>
       <a href="#reviews"       class="hover:text-white transition">Reviews</a>
       <a href="#orders"        class="hover:text-white transition">Orders</a>
+      <a href="#ipfs-storage"  class="hover:text-white transition">IPFS Storage</a>
     </div>
 
     <button id="walletBtn"
@@ -133,7 +134,7 @@
         <span class="text-white/40">·</span>
         <span class="pill bg-white/5 text-white/50 border border-white/10">Blur Preview</span>
         <span class="text-white/40">·</span>
-        <span class="text-xs text-white/40">AES-256-GCM · SHA-256 manifest · IPFS handoff</span>
+        <span class="text-xs text-white/40">AES-256-GCM · SHA-256 manifest · IPFS v2 (150 Mbps) · CDN edge</span>
       </div>
     </div>
   </section>
@@ -417,6 +418,91 @@
   </section>
 
   <!-- ── TOAST ──────────────────────────────────────────────────────── -->
+  <!-- ── IPFS STORAGE ─────────────────────────────────────────── -->
+  <section class="px-6 max-w-6xl mx-auto mt-10" id="ipfs-storage">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <div class="inline-flex items-center gap-2 pill bg-[#65C2CB]/10 text-[#65C2CB] border border-[#65C2CB]/20 uppercase tracking-widest mb-2">v2 — Speed Optimized</div>
+        <h2 class="text-xl font-bold">IPFS Storage</h2>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="pill bg-[#14F195]/10 text-[#14F195] border border-[#14F195]/20 text-xs">● Active</span>
+        <span class="text-xs text-white/30">Pinata CDN</span>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+      <div class="panel rounded-xl p-4 text-center">
+        <div class="text-2xl font-bold gradient-text">150</div>
+        <div class="text-xs text-white/40 mt-1">Mbps throughput</div>
+      </div>
+      <div class="panel rounded-xl p-4 text-center">
+        <div class="text-2xl font-bold gradient-text">10</div>
+        <div class="text-xs text-white/40 mt-1">parallel streams</div>
+      </div>
+      <div class="panel rounded-xl p-4 text-center">
+        <div class="text-2xl font-bold gradient-text">16</div>
+        <div class="text-xs text-white/40 mt-1">MiB chunk size</div>
+      </div>
+      <div class="panel rounded-xl p-4 text-center">
+        <div class="text-2xl font-bold gradient-text">3</div>
+        <div class="text-xs text-white/40 mt-1">pin replicas</div>
+      </div>
+    </div>
+    <div class="panel rounded-2xl p-6 mb-6">
+      <h3 class="text-sm font-semibold text-white/60 mb-4">Storage Classes</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="rounded-xl border border-[#14F195]/30 bg-[#14F195]/5 p-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-semibold text-[#14F195]">Hot Storage</span>
+            <span class="pill bg-[#14F195]/20 text-[#14F195] border border-[#14F195]/30 text-[10px]">150 Mbps</span>
+          </div>
+          <p class="text-xs text-white/40 leading-relaxed">Instant retrieval. CDN edge caching for real-time data access.</p>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-semibold text-white/60">Standard Storage</span>
+            <span class="pill bg-white/5 text-white/40 border border-white/10 text-[10px]">80 Mbps</span>
+          </div>
+          <p class="text-xs text-white/40 leading-relaxed">Balanced performance and cost for encrypted payloads up to 2 GiB.</p>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-semibold text-white/60">Cold Storage</span>
+            <span class="pill bg-white/5 text-white/40 border border-white/10 text-[10px]">30 Mbps</span>
+          </div>
+          <p class="text-xs text-white/40 leading-relaxed">Long-term archival. Lower cost for infrequently accessed datasets.</p>
+        </div>
+      </div>
+    </div>
+    <div class="panel rounded-2xl p-6">
+      <h3 class="text-sm font-semibold text-white/60 mb-4">Upload Simulation (1.42 GiB file)</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="rounded-xl bg-white/[0.03] border border-white/10 p-4 text-xs space-y-2">
+          <div class="flex justify-between"><span class="text-white/35">CID</span><span class="mono text-[#14F195]">bafk7c4f...a91ab</span></div>
+          <div class="flex justify-between"><span class="text-white/35">Storage</span><span class="text-[#14F195]">Hot · CDN</span></div>
+          <div class="flex justify-between"><span class="text-white/35">Throughput</span><span class="text-[#14F195]">150 Mbps</span></div>
+          <div class="flex justify-between"><span class="text-white/35">Chunks</span><span class="text-white/60">91 parts · 10 parallel</span></div>
+          <div class="flex justify-between"><span class="text-white/35">Duration</span><span class="text-white/60">~77 ms</span></div>
+          <div class="flex justify-between"><span class="text-white/35">Checksum</span><span class="mono text-white/60">sha256:7c4f...91ab</span></div>
+          <div class="flex justify-between"><span class="text-white/35">Status</span><span class="text-[#14F195]">Pinned (3 replicas)</span></div>
+        </div>
+        <div class="rounded-xl bg-white/[0.03] border border-white/10 p-4 text-xs">
+          <div class="text-white/40 mb-3">Storage Quota</div>
+          <div class="mb-3">
+            <div class="flex justify-between text-xs mb-1"><span class="text-white/40">Used</span><span class="text-white/60">4.2 GiB / 100 GiB</span></div>
+            <div class="w-full h-2 rounded-full bg-white/10"><div class="h-2 rounded-full bg-gradient-to-r from-[#9945FF] to-[#14F195] w-[4%]"></div></div>
+          </div>
+          <div class="space-y-1">
+            <div>Files: <span class="text-white/60">8</span></div>
+            <div>Pinned: <span class="text-white/60">8</span></div>
+            <div>Gateway: <span class="mono text-[#65C2CB]">gateway.pinata.cloud</span></div>
+          </div>
+        </div>
+      </div>
+      <p class="text-[11px] text-white/25 mt-4">IPFS v2 storage layer with Pinata CDN integration. Multipart upload with 10 parallel streams, 16 MiB chunk size, and 3x replica pinning.</p>
+    </div>
+  </section>
+
   <div id="toast" class="hidden fixed bottom-6 right-6 panel rounded-xl px-5 py-3 text-sm glow-accent border-[#14F195]/30 max-w-sm"></div>
 
   <!-- ── SCRIPT ─────────────────────────────────────────────────────── -->

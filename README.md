@@ -113,7 +113,7 @@ This repo contains the **Solana smart contract** (`data_market`) handling all on
                         │
            ┌────────────┼────────────┐
            ▼            ▼            ▼
-   OOBE Staging RPC   IPFS        Helius
+   OOBE Staging RPC   IPFS v2      Helius
     (settlement)  (ciphertext)  (webhooks
                   via Pinata)   → indexer)
                         │
@@ -263,6 +263,7 @@ gross_price
 ## Security
 
 - **AES-256 client-side encryption** — files encrypt in the browser before IPFS upload; OBSCRA never holds a plaintext key
+- **IPFS v2 storage** — enhanced IPFS storage layer with 150 Mbps throughput, 10 parallel upload streams, 16 MiB chunk size, CDN edge caching, and 3x replica pinning for maximum durability and speed
 - **2 GiB large-object upload envelope** — SDK/UI policy supports multipart preflight, checksum manifesting, structured file metadata, and encrypted IPFS handoff for bigger data assets
 - **Escrow PDAs** are system-owned lamport-only accounts — zero deserialization attack surface
 - **`has_one` constraints** verify seller ownership without extra signatures
