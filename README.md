@@ -262,8 +262,10 @@ gross_price
 
 ## Security
 
-- **AES-256 client-side encryption** — files encrypt in the browser before IPFS upload; OBSCRA never holds a plaintext key
-- **IPFS v2 storage** — enhanced IPFS storage layer with 150 Mbps throughput, 10 parallel upload streams, 16 MiB chunk size, CDN edge caching, and 3x replica pinning for maximum durability and speed
+- **AES-256-GCM client-side encryption** — 256-bit authenticated encryption (IND-CPA + INT-CTXT secure) with Argon2id key derivation, x25519 key exchange, and multi-layer envelope with auth tag verification
+- **Encryption envelope v3** — structured envelope with KDF, key exchange method, salt, IV, auth tag, checksums, and metadata hash for end-to-end integrity and authenticity verification
+- **Decryption verification** — auth tag validation, plaintext checksum verification, and metadata hash confirmation before key release
+- **IPFS v2 storage** — encrypted IPFS storage with 150 Mbps throughput, 10 parallel upload streams, 16 MiB chunk size, CDN edge caching, and 3x replica pinning
 - **2 GiB large-object upload envelope** — SDK/UI policy supports multipart preflight, checksum manifesting, structured file metadata, and encrypted IPFS handoff for bigger data assets
 - **Escrow PDAs** are system-owned lamport-only accounts — zero deserialization attack surface
 - **`has_one` constraints** verify seller ownership without extra signatures
