@@ -168,6 +168,22 @@
       <span>·</span>
       <button onclick="toggleWishlistView()" id="wishlistToggle" class="hover:text-white transition">♡ Wishlist (0)</button>
     </div>
+    <!-- Tag Filters -->
+    <div class="flex flex-wrap gap-2 mb-4">
+      <span class="text-[10px] text-white/25 uppercase tracking-widest pt-1">Tags:</span>
+      <button onclick="setTagFilter('')"        id="tagAll"           class="px-3 py-1 rounded-full text-[10px] font-medium bg-[#9945FF]/20 text-[#9945FF] border border-[#9945FF]/30">All</button>
+      <button onclick="setTagFilter('crypto')"   id="tagCrypto"         class="px-3 py-1 rounded-full text-[10px] font-medium bg-white/5 text-white/50 border border-white/10 hover:bg-white/10">crypto</button>
+      <button onclick="setTagFilter('defi')"    id="tagDefi"           class="px-3 py-1 rounded-full text-[10px] font-medium bg-white/5 text-white/50 border border-white/10 hover:bg-white/10">defi</button>
+      <button onclick="setTagFilter('nft')"     id="tagNft"            class="px-3 py-1 rounded-full text-[10px] font-medium bg-white/5 text-white/50 border border-white/10 hover:bg-white/10">nft</button>
+      <button onclick="setTagFilter('mev')"     id="tagMev"            class="px-3 py-1 rounded-full text-[10px] font-medium bg-white/5 text-white/50 border border-white/10 hover:bg-white/10">mev</button>
+      <button onclick="setTagFilter('social')"  id="tagSocial"         class="px-3 py-1 rounded-full text-[10px] font-medium bg-white/5 text-white/50 border border-white/10 hover:bg-white/10">social</button>
+      <button onclick="setTagFilter('liquidation')" id="tagLiquidation"   class="px-3 py-1 rounded-full text-[10px] font-medium bg-white/5 text-white/50 border border-white/10 hover:bg-white/10">liquidation</button>
+      <button onclick="setTagFilter('governance')" id="tagGovernance"    class="px-3 py-1 rounded-full text-[10px] font-medium bg-white/5 text-white/50 border border-white/10 hover:bg-white/10">governance</button>
+      <button onclick="setTagFilter('nlp')"      id="tagNlp"            class="px-3 py-1 rounded-full text-[10px] font-medium bg-white/5 text-white/50 border border-white/10 hover:bg-white/10">nlp</button>
+      <button onclick="setTagFilter('btc')"     id="tagBtc"            class="px-3 py-1 rounded-full text-[10px] font-medium bg-white/5 text-white/50 border border-white/10 hover:bg-white/10">btc</button>
+      <button onclick="setTagFilter('arbitrage')" id="tagArbitrage"     class="px-3 py-1 rounded-full text-[10px] font-medium bg-white/5 text-white/50 border border-white/10 hover:bg-white/10">arbitrage</button>
+    </div>
+    </div>
 
     <!-- TABS -->
     <div class="flex gap-1 border-b border-white/5 mb-8 overflow-x-auto">
@@ -509,14 +525,18 @@
   <script>
     // ── sample data ───────────────────────────────────────────────────
     const SAMPLE_LISTINGS = [
-      { id: 1,  title: "ETH/USD 1-min OHLCV 2024",      category: "market-data", price: 1.5, seller: "8xYz...mN3p", tags: ["crypto","ohlcv"],  views: 1247, sales: 34, preview: "12-month tick-by-tick candles for ETH/USD, CSV + Parquet format.", metadata: { file: "eth_usd_ohlcv_2024.parquet", size: "1.42 GiB", type: "Parquet", checksum: "sha256:7c4f…91ab", chunks: 91, encrypted: "AES-256-GCM" }, ai: { confidence: "0.94", summary: "Generated premium market-data description." }, sellerRating: { avg: 4.5, count: 28 } },
-      { id: 2,  title: "GPT-4 Synthetic Q&A Dataset",    category: "ml-models",   price: 3.2, seller: "4aKw...jQ7r", tags: ["nlp","fine-tune"], views: 892, sales: 12, preview: "500 k instruction pairs for LLM fine-tuning, Apache-2 license.", metadata: { file: "synthetic_qa_corpus.jsonl", size: "860 MiB", type: "JSONL", checksum: "sha256:b19e…42de", chunks: 54, encrypted: "AES-256-GCM" }, ai: { confidence: "0.91", summary: "Generated ML-focused listing copy." }, sellerRating: { avg: 4.5, count: 11 } },
-      { id: 3,  title: "Solana Whale Alert Feed Q1",     category: "signals",     price: 0.8, seller: "2rTp...bL9s", tags: ["on-chain","whale"], views: 2103, sales: 56, preview: "All >$500 k SOL transfers with wallet labels, Jan – Mar 2026.", metadata: { file: "sol_whale_feed_q1.csv", size: "318 MiB", type: "CSV", checksum: "sha256:03aa…e77c", chunks: 20, encrypted: "AES-256-GCM" }, ai: { confidence: "0.88", summary: "Generated whale-signal description." }, sellerRating: { avg: 3.8, count: 55 } },
-      { id: 4,  title: "DeFi Alpha Report — April 2026", category: "research",    price: 2.0, seller: "9nWm...cF4k", tags: ["defi","alpha"], views: 445, sales: 8, preview: "37-page proprietary analysis covering top-10 protocols.", metadata: { file: "defi_alpha_apr_2026.pdf", size: "74 MiB", type: "PDF", checksum: "sha256:aa81…19f0", chunks: 5, encrypted: "AES-256-GCM" }, ai: { confidence: "0.86", summary: "Generated institutional research copy." }, sellerRating: { avg: 5.0, count: 7 } },
-      { id: 5,  title: "Birdeye API Pro Key (30 days)",  category: "api-access",  price: 0.5, seller: "6vHq...dE2x", tags: ["api","birdeye"], views: 678, sales: 22, preview: "Resold premium key — 30-day access, 1 M calls / day.", metadata: { file: "birdeye_access_manifest.json", size: "12 KiB", type: "Manifest", checksum: "sha256:bc90…41a2", chunks: 1, encrypted: "sealed-key" }, ai: { confidence: "0.79", summary: "Generated API-access listing copy." }, sellerRating: { avg: 2.3, count: 18 } },
-      { id: 6,  title: "NFT Floor-Price Time Series",    category: "market-data", price: 1.1, seller: "3mJs...hA8t", tags: ["nft","floor"], views: 312, sales: 5, preview: "15 collections tracked hourly for 90 days.", metadata: { file: "nft_floor_timeseries.avro", size: "526 MiB", type: "Avro", checksum: "sha256:f3d2…b72e", chunks: 33, encrypted: "AES-256-GCM" }, ai: { confidence: "0.90", summary: "Generated NFT analytics description." }, sellerRating: { avg: 4.0, count: 4 } },
-      { id: 7,  title: "Bitcoin Liquidations Feed",       category: "signals",     price: 0.3, seller: "7kLm...qR2p", tags: ["btc","liquidation"], views: 1890, sales: 89, preview: "Real-time BTC liquidation alerts across top exchanges, JSON stream.", metadata: { file: "btc_liquidations.jsonl", size: "145 MiB", type: "JSONL", checksum: "sha256:9f2a…34bc", chunks: 9, encrypted: "AES-256-GCM" }, ai: { confidence: "0.85", summary: "Generated signal dataset description." }, sellerRating: { avg: 4.2, count: 87 } },
-      { id: 8,  title: "DeFi Liquidity Pool Analytics",  category: "market-data", price: 2.5, seller: "5nPq...kT8w", tags: ["defi","dex","liquidity"], views: 567, sales: 14, preview: "Historical LP data for Uniswap v3 and Raydium pools, 6-month window.", metadata: { file: "defi_lp_analytics.parquet", size: "2.1 GiB", type: "Parquet", checksum: "sha256:1a8c…78de", chunks: 134, encrypted: "AES-256-GCM" }, ai: { confidence: "0.92", summary: "Generated market analytics description." }, sellerRating: { avg: 4.7, count: 12 } },
+      { id: 1,  title: "ETH/USD 1-min OHLCV 2024",      category: "market-data", price: 1.5, seller: "8xYz...mN3p", tags: ["crypto","ohlcv","high-frequency","tick-data","csv","parquet"," Binance","Kraken"," Coinbase"], views: 1247, sales: 34, preview: "12-month tick-by-tick candles for ETH/USD, CSV + Parquet format.", metadata: { file: "eth_usd_ohlcv_2024.parquet", size: "1.42 GiB", type: "Parquet", checksum: "sha256:7c4f…91ab", chunks: 91, encrypted: "AES-256-GCM" }, ai: { confidence: "0.94", summary: "Generated premium market-data description." }, sellerRating: { avg: 4.5, count: 28 } },
+      { id: 2,  title: "GPT-4 Synthetic Q&A Dataset",    category: "ml-models",   price: 3.2, seller: "4aKw...jQ7r", tags: ["nlp","fine-tune","synthetic-data","instruction-tuning","chatgpt","rlhf","apache-2","jsonl"], views: 892, sales: 12, preview: "500 k instruction pairs for LLM fine-tuning, Apache-2 license.", metadata: { file: "synthetic_qa_corpus.jsonl", size: "860 MiB", type: "JSONL", checksum: "sha256:b19e…42de", chunks: 54, encrypted: "AES-256-GCM" }, ai: { confidence: "0.91", summary: "Generated ML-focused listing copy." }, sellerRating: { avg: 4.5, count: 11 } },
+      { id: 3,  title: "Solana Whale Alert Feed Q1",     category: "signals",     price: 0.8, seller: "2rTp...bL9s", tags: ["on-chain","whale","memecoin","transfer-tracking","wallet-label","solana-ecosystem"], views: 2103, sales: 56, preview: "All >$500 k SOL transfers with wallet labels, Jan – Mar 2026.", metadata: { file: "sol_whale_feed_q1.csv", size: "318 MiB", type: "CSV", checksum: "sha256:03aa…e77c", chunks: 20, encrypted: "AES-256-GCM" }, ai: { confidence: "0.88", summary: "Generated whale-signal description." }, sellerRating: { avg: 3.8, count: 55 } },
+      { id: 4,  title: "DeFi Alpha Report — April 2026", category: "research",    price: 2.0, seller: "9nWm...cF4k", tags: ["defi","alpha","yield-farming","lending","flash-loans","protocol-analysis","investment"], views: 445, sales: 8, preview: "37-page proprietary analysis covering top-10 protocols.", metadata: { file: "defi_alpha_apr_2026.pdf", size: "74 MiB", type: "PDF", checksum: "sha256:aa81…19f0", chunks: 5, encrypted: "AES-256-GCM" }, ai: { confidence: "0.86", summary: "Generated institutional research copy." }, sellerRating: { avg: 5.0, count: 7 } },
+      { id: 5,  title: "Birdeye API Pro Key (30 days)",  category: "api-access",  price: 0.5, seller: "6vHq...dE2x", tags: ["api","birdeye","web3-data","DeFi","nft-analytics","wallet-tracking"], views: 678, sales: 22, preview: "Resold premium key — 30-day access, 1 M calls / day.", metadata: { file: "birdeye_access_manifest.json", size: "12 KiB", type: "Manifest", checksum: "sha256:bc90…41a2", chunks: 1, encrypted: "sealed-key" }, ai: { confidence: "0.79", summary: "Generated API-access listing copy." }, sellerRating: { avg: 2.3, count: 18 } },
+      { id: 6,  title: "NFT Floor-Price Time Series",    category: "market-data", price: 1.1, seller: "3mJs...hA8t", tags: ["nft","floor"," rarible"," OpenSea"," MagicEden"," Solana-NFT","jpeg","png","metadata"], views: 312, sales: 5, preview: "15 collections tracked hourly for 90 days.", metadata: { file: "nft_floor_timeseries.avro", size: "526 MiB", type: "Avro", checksum: "sha256:f3d2…b72e", chunks: 33, encrypted: "AES-256-GCM" }, ai: { confidence: "0.90", summary: "Generated NFT analytics description." }, sellerRating: { avg: 4.0, count: 4 } },
+      { id: 7,  title: "Bitcoin Liquidations Feed",       category: "signals",     price: 0.3, seller: "7kLm...qR2p", tags: ["btc","liquidation"," binance","okx","bybit"," funding-rate","long-short-ratio"], views: 1890, sales: 89, preview: "Real-time BTC liquidation alerts across top exchanges, JSON stream.", metadata: { file: "btc_liquidations.jsonl", size: "145 MiB", type: "JSONL", checksum: "sha256:9f2a…34bc", chunks: 9, encrypted: "AES-256-GCM" }, ai: { confidence: "0.85", summary: "Generated signal dataset description." }, sellerRating: { avg: 4.2, count: 87 } },
+      { id: 8,  title: "DeFi Liquidity Pool Analytics",  category: "market-data", price: 2.5, seller: "5nPq...kT8w", tags: ["defi","dex","liquidity","uniswap-v3","raydium"," amm","concentrated-liquidity","tick-data"], views: 567, sales: 14, preview: "Historical LP data for Uniswap v3 and Raydium pools, 6-month window.", metadata: { file: "defi_lp_analytics.parquet", size: "2.1 GiB", type: "Parquet", checksum: "sha256:1a8c…78de", chunks: 134, encrypted: "AES-256-GCM" }, ai: { confidence: "0.92", summary: "Generated market analytics description." }, sellerRating: { avg: 4.7, count: 12 } },
+      { id: 9,  title: "On-Chain Governance Proposals", category: "research",    price: 1.8, seller: "2mKp...rT5w", tags: ["dao","governance","投票","snapshot","on-chain-voting","delegation"], views: 234, sales: 3, preview: "Historical governance proposals with voting patterns across 12 major DAOs.", metadata: { file: "dao_governance_proposals.parquet", size: "890 MiB", type: "Parquet", checksum: "sha256:3b7f…90cd", chunks: 56, encrypted: "AES-256-GCM" }, ai: { confidence: "0.88", summary: "Generated governance research copy." }, sellerRating: { avg: 4.8, count: 2 } },
+      { id: 10, title: "Cross-Asset Correlation Matrix",    category: "market-data", price: 4.2, seller: "9nRt...kB3p", tags: ["correlation","pairs-trading","statistics","python","pandas"," numpy","backtesting"], views: 178, sales: 2, preview: "Daily correlation matrices for 200 assets across crypto, equities, and commodities.", metadata: { file: "correlation_matrix_200.parquet", size: "1.8 GiB", type: "Parquet", checksum: "sha256:5c9a…21ef", chunks: 115, encrypted: "AES-256-GCM" }, ai: { confidence: "0.91", summary: "Generated analytics dataset copy." }, sellerRating: { avg: 4.6, count: 1 } },
+      { id: 11, title: "MEV Bot Strategies Dataset",        category: "signals",     price: 5.5, seller: "7qLm...pW9x", tags: ["mev"," arbitrage","sandwich-attack","flashbots","Searcher","bot-strategies"], views: 3421, sales: 28, preview: "Historical MEV bot strategies with execution traces and profit data.", metadata: { file: "mev_strategies_traces.jsonl", size: "2.8 GiB", type: "JSONL", checksum: "sha256:8d2e…77gh", chunks: 178, encrypted: "AES-256-GCM" }, ai: { confidence: "0.95", summary: "Generated MEV signal description." }, sellerRating: { avg: 4.9, count: 26 } },
+      { id: 12, title: "Crypto Social Sentiment Index",    category: "signals",     price: 1.2, seller: "3kNm...vJ6t", tags: ["social"," sentiment"," twitter"," discord","telegram","nlp","text-analysis"], views: 876, sales: 15, preview: "Daily social sentiment scores for top 500 crypto assets across Twitter, Discord, and Telegram.", metadata: { file: "social_sentiment_index.parquet", size: "3.2 GiB", type: "Parquet", checksum: "sha256:2f1c…55ij", chunks: 205, encrypted: "AES-256-GCM" }, ai: { confidence: "0.89", summary: "Generated social sentiment copy." }, sellerRating: { avg: 4.3, count: 13 } },
     ];
 
     const SAMPLE_AUCTIONS = [
@@ -585,6 +605,7 @@
     // ── marketplace state ─────────────────────────────────────────────
     let currentCategory = 'all';
     let currentSort = 'newest';
+    let currentTag = '';
     let wishlist = [];
     let showWishlistOnly = false;
 
@@ -987,11 +1008,29 @@
       filterAndRenderListings();
     }
 
+    function setTagFilter(tag) {
+      currentTag = tag;
+      document.querySelectorAll('[id^="tag"]').forEach(btn => {
+        if (btn.id === 'tagAll' && tag === '') {
+          btn.className = 'px-3 py-1 rounded-full text-[10px] font-medium bg-[#9945FF]/20 text-[#9945FF] border border-[#9945FF]/30';
+        } else if (btn.id === 'tag' + tag) {
+          btn.className = 'px-3 py-1 rounded-full text-[10px] font-medium bg-[#9945FF]/20 text-[#9945FF] border border-[#9945FF]/30';
+        } else {
+          btn.className = 'px-3 py-1 rounded-full text-[10px] font-medium bg-white/5 text-white/50 border border-white/10 hover:bg-white/10';
+        }
+      });
+      filterAndRenderListings();
+    }
+
     function filterAndRenderListings() {
       let filtered = [...SAMPLE_LISTINGS];
 
       if (currentCategory !== 'all') {
         filtered = filtered.filter(l => l.category === currentCategory);
+      }
+
+      if (currentTag !== '') {
+        filtered = filtered.filter(l => l.tags.some(t => t.toLowerCase().includes(currentTag.toLowerCase()));
       }
 
       if (showWishlistOnly) {
