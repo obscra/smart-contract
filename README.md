@@ -81,6 +81,7 @@ This repo contains the **Solana smart contract** (`data_market`) handling all on
 | AI generation | **Xona Agent** | Integrates with [Xona](https://xona-agent.com/) for AI-generated listing images, image prompts, and marketplace descriptions |
 | Preview protection | **Blur Preview** | Configurable blur filters on encrypted data thumbnails based on content class, buyer trust tier, and access level |
 | Disputes | **Claim** | 7-day buyer window, arbitrator-resolved with on-chain outcome |
+| AI Agent | **Hatcher Agent Dataset** | OBSCRA provides dataset agent-ready data assets — AI agents can autonomously search, evaluate, purchase, and analyze datasets with built-in scoring, budget management, and insight generation |
 
 ---
 
@@ -338,6 +339,92 @@ make size                 # check .so binary vs 1.5 MiB BPF limit
 | `subscription.ts` | Create plan, purchase, renewal stacking, plan pause |
 | `reputation_dispute.ts` | List → buy → review → dispute → arbitrate |
 | `user_profile.ts` | Register, update, auth guard, length validation |
+
+---
+
+## Hatcher Agent Dataset Integration
+
+OBSCRA provides **dataset agent-ready data assets** — designed for AI agents to autonomously search, evaluate, purchase, and analyze datasets on-chain.
+
+### How it works
+
+```
+┌──────────────────────────────────────────────────────────┐
+│              Hatcher Agent (AI Buyer)                     │
+│                                                          │
+│  1. Search ──▶ OBSCRA Marketplace (filtered by tags,    │
+│                    category, price, rating)                │
+│                                                          │
+│  2. Evaluate ──▶ Dataset scoring (quality × price ×     │
+│                     rating × format × popularity)         │
+│                                                          │
+│  3. Purchase ──▶ On-chain SOL payment via escrow        │
+│                                                          │
+│  4. Analyze ──▶ Data quality assessment, insights,      │
+│                     recommendations                        │
+│                                                          │
+│  5. Download ──▶ AES-256-GCM decrypted IPFS retrieval   │
+└──────────────────────────────────────────────────────────┘
+```
+
+### Dataset metadata for AI agents
+
+Every listing on OBSCRA includes structured metadata optimized for agent consumption:
+
+| Field | Description |
+|---|---|
+| `id` | Unique listing identifier |
+| `title` | Human-readable dataset name |
+| `category` | `market-data`, `ml-models`, `signals`, `research`, `api-access` |
+| `tags` | Searchable keywords (`crypto`, `defi`, `nft`, `mev`, etc.) |
+| `price` | Price in SOL |
+| `rating` | Seller trust score (1-5) |
+| `sales` | Total completed sales |
+| `views` | Listing view count |
+| `file_format` | `Parquet`, `CSV`, `JSONL`, `PDF` |
+| `file_size` | Dataset size |
+| `chunks` | IPFS chunk count |
+| `encryption` | Encryption algorithm (`AES-256-GCM`) |
+| `ipfs_cid` | Content Identifier for retrieval |
+
+### Agent scoring formula
+
+```
+Score = (25 - price×5) + (rating×6) + min(20, sales×0.5) + min(15, views×0.01) + format_score
+
+Recommendation:
+  Score ≥ 60  → BUY
+  Score 40-59 → CONSIDER
+  Score < 40  → SKIP
+```
+
+### Available dataset categories
+
+| Category | Description | Example Tags |
+|---|---|---|
+| `market-data` | Historical OHLCV, order book, trade feeds | `crypto`, `ohlcv`, `high-frequency`, `tick-data` |
+| `ml-models` | Training datasets, synthetic data, embeddings | `nlp`, `fine-tune`, `synthetic-data`, `rlhf` |
+| `signals` | Trading signals, whale alerts, sentiment | `mev`, `arbitrage`, `whale`, `social` |
+| `research` | Reports, analysis, governance data | `defi`, `alpha`, `dao`, `governance` |
+| `api-access` | API keys, access tokens, manifests | `api`, `birdeye`, `web3-data` |
+
+### Dataset tags (searchable)
+
+**Trading & Market Data:** `crypto`, `ohlcv`, `high-frequency`, `tick-data`, `csv`, `parquet`, `binance`, `kraken`, `coinbase`, `arbitrage`, `liquidation`, `btc`
+
+**DeFi & Protocols:** `defi`, `dex`, `liquidity`, `amm`, `uniswap-v3`, `raydium`, `yield-farming`, `lending`, `flash-loans`, `protocol-analysis`
+
+**NFTs:** `nft`, `floor`, `rarible`, `opensea`, `magic-eden`, `solana-nft`, `jpeg`, `png`, `metadata`
+
+**AI & ML:** `nlp`, `fine-tune`, `synthetic-data`, `instruction-tuning`, `chatgpt`, `rlhf`, `apache-2`, `jsonl`, `text-analysis`
+
+**Social & Sentiment:** `social`, `sentiment`, `twitter`, `discord`, `telegram`
+
+**On-Chain:** `on-chain`, `whale`, `memecoin`, `transfer-tracking`, `wallet-label`, `solana-ecosystem`, `dao`, `governance`, `snapshot`
+
+**MEV & Bots:** `mev`, `arbitrage`, `sandwich-attack`, `flashbots`, `searcher`, `bot-strategies`
+
+---
 
 ---
 
